@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TaxRequester" GeneratedClassName="app">
+  <Profiles />
+  <Settings>
+    <Setting Name="CDIEndpoint" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://www2.cetip.com.br/ConsultarTaxaDi/ConsultarTaxaDICetip.aspx</Value>
+    </Setting>
+    <Setting Name="IPCAEndpoint" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://servicodados.ibge.gov.br/api/v3/agregados/portal?view=object</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
