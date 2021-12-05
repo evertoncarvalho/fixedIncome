@@ -6,11 +6,10 @@ namespace FixedIncome
     {
         static void Main(string[] args)
         {
-            TaxRequester.CDIData cdi = new TaxRequester.Requester().GetCDI();
-            Console.WriteLine("cdi " + cdi.Tax
-                + " cdi date " + cdi.TaxDate
-                + " index " + cdi.Index
-                + " index date" + cdi.IndexDate);
+            TaxRequester.Requester requester = new TaxRequester.Requester();
+            TaxRequester.CDIData cdi = requester.GetCDI();
+            Console.WriteLine(cdi.AsString);
+            Console.WriteLine(requester.GetIPCALast12Months().AsString);
         }
     }
 }

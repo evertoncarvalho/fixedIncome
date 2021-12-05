@@ -42,7 +42,7 @@ namespace TaxRequester
             object existingValue,
             JsonSerializer serializer)
         {
-            return DateTime.Parse(reader.Value.ToString(), new CultureInfo("pt-BR", false));//, "dd/mm/yyyy");
+            return DateTime.Parse(reader.Value.ToString(), new CultureInfo("pt-BR", false));
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
