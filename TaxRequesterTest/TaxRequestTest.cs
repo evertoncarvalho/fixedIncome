@@ -12,28 +12,28 @@ namespace TaxRequesterTest
                 + "\"indice\":\"33.479,60\",\"dataIndice\":\"06/12/2021\"}";
 
         [TestMethod]
-        public void ParseTax()
+        public void ParseCDITax()
         {
             CDIData cdiData = JsonConvert.DeserializeObject<CDIData>(_cdiDataAsJson);
             Assert.IsTrue((cdiData.Tax - 7.65) < 0.001);
         }
 
         [TestMethod]
-        public void ParseIndex()
+        public void ParseCDIIndex()
         {
             CDIData cdiData = JsonConvert.DeserializeObject<CDIData>(_cdiDataAsJson);
             Assert.AreEqual(cdiData.Index, 33479,60);
         }
 
         [TestMethod]
-        public void ParseTaxDate()
+        public void ParseCDITaxDate()
         {
             CDIData cdiData = JsonConvert.DeserializeObject<CDIData>(_cdiDataAsJson);
             Assert.AreEqual(cdiData.TaxDate, DateTime.Parse("03/12/2021"));
         }
 
         [TestMethod]
-        public void ParseIndexDate()
+        public void ParseCDIIndexDate()
         {
             CDIData cdiData = JsonConvert.DeserializeObject<CDIData>(_cdiDataAsJson);
             Assert.AreEqual(cdiData.IndexDate, DateTime.Parse("06/12/2021"));
