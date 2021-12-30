@@ -29,7 +29,7 @@ namespace FixedIncomeManager
         public float Capital { get; private set; }
         public FixedIncomeType Type { get; private set; }
         public FixedIncomeTaxType TaxType { get; private set; }
-        public FixedIncomeIndexer Segment { get; private set; }
+        public FixedIncomeIndexer Indexer { get; private set; }
         public DateTime Hiring { get; private set; }
         public DateTime Expiration { get; private set; }
 
@@ -39,7 +39,7 @@ namespace FixedIncomeManager
             float capital,
             FixedIncomeType type,
             FixedIncomeTaxType taxType,
-            FixedIncomeIndexer segment,
+            FixedIncomeIndexer indexer,
             DateTime hiring,
             DateTime expiration)
         {
@@ -48,7 +48,7 @@ namespace FixedIncomeManager
             Capital = capital;
             Type = type;
             TaxType = taxType;
-            Segment = segment;
+            Indexer = indexer;
             Hiring = hiring;
             Expiration = expiration;
         }

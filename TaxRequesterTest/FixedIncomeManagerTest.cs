@@ -19,27 +19,19 @@ namespace TaxRequesterTest
                 "name",
                 "broker",
                 0f,
-                DateTime.Now,
-                DateTime.Now,
                 FixedIncomeType.CDB,
+                FixedIncomeTaxType.POST,
                 FixedIncomeIndexer.CDI,
-                FixedIncomeTaxType.POST);
+                DateTime.Now,
+                DateTime.Now);
             Assert.IsTrue(lastCount < manager.Get().Count);
         }
 
         [TestMethod]
         public void TryLoadCsv()
         {
-            FixedIncomeManager.Manager manager = new FixedIncomeManager.Manager();
-            Assert.IsTrue(manager.LoadFromCsv("D:/projects/fixedIncome/fixedIncomeSample.csv"));
-        }
-
-        [TestMethod]
-        public void LoadCsv()
-        {
-            FixedIncomeManager.Manager manager = new FixedIncomeManager.Manager();
-            manager.LoadFromCsv("D:/projects/fixedIncome/fixedIncomeSample.csv");
-            Assert.IsTrue(manager.Get().Count == 42);
+            SpreadsheetCsvParser parser = new SpreadsheetCsvParser("D:/projects/fixedIncome/fixedIncomeSample.csv");
+            Assert.IsTrue(parser.Get().Count == 42);
         }
 
         [TestMethod]
