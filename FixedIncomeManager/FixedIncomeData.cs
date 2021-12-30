@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FixedIncomeManager
 {
-    public enum FixedIncomeSegment
+    public enum FixedIncomeIndexer
     {
         CDI,
         IPCA
@@ -18,25 +14,39 @@ namespace FixedIncomeManager
         POST
     }
 
+    public enum FixedIncomeType
+    {
+        LC,
+        LCA,
+        LCI,
+        CDB
+    }
+
     public class FixedIncomeData
     {
         public string Name { get; private set; }
+        public string Broker { get; private set; }
         public float Capital { get; private set; }
+        public FixedIncomeType Type { get; private set; }
         public FixedIncomeTaxType TaxType { get; private set; }
-        public FixedIncomeSegment Segment { get; private set; }
+        public FixedIncomeIndexer Segment { get; private set; }
         public DateTime Hiring { get; private set; }
         public DateTime Expiration { get; private set; }
 
         public FixedIncomeData(
             string name,
+            string broker,
             float capital,
+            FixedIncomeType type,
             FixedIncomeTaxType taxType,
-            FixedIncomeSegment segment,
+            FixedIncomeIndexer segment,
             DateTime hiring,
             DateTime expiration)
         {
             Name = name;
+            Broker = broker;
             Capital = capital;
+            Type = type;
             TaxType = taxType;
             Segment = segment;
             Hiring = hiring;
