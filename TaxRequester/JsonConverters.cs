@@ -8,7 +8,7 @@ namespace TaxRequester
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(float);
+            return objectType == typeof(double);
         }
 
         public override object ReadJson(
@@ -17,7 +17,7 @@ namespace TaxRequester
             object existingValue,
             JsonSerializer serializer)
         {
-            return float.Parse(reader.Value.ToString());
+            return double.Parse(reader.Value.ToString());
         }
 
         public override void WriteJson(

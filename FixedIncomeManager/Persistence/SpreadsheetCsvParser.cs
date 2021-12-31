@@ -32,22 +32,25 @@ namespace FixedIncomeManager.Persistence
                 {
                     using (StreamReader reader = new StreamReader(SourceString))
                     {
-                        reader.ReadLine(); //skip header
-                        string line = null;
+                        string line = reader.ReadLine();
+                        string[] parts = line.Split(';');
+                        DateTime lastBondValueUpdate = DateTime.Parse(parts[1]);
                         while ((line = reader.ReadLine()) != null)
                         {
-                            string[] parts = line.Split(';');
-                            items.Add(new FixedIncomeData(
+                            parts = line.Split(';');
+                            FixedIncomeData fixedIncome = new FixedIncomeData(
                                 parts[6],
                                 parts[17],
-                                float.Parse(parts[0], System.Globalization.NumberStyles.Currency),
-                                float.Parse(parts[1], System.Globalization.NumberStyles.Currency),
-                                float.Parse(parts[3].Trim('%')),
+                                double.Parse(parts[0], System.Globalization.NumberStyles.Currency),
+                                double.Parse(parts[1], System.Globalization.NumberStyles.Currency),
+                                double.Parse(parts[3].Trim('%')),
                                 (FixedIncomeType)Enum.Parse(typeof(FixedIncomeType), parts[18]),
                                 GetFixedIncomeTaxType(parts[19]),
                                 (FixedIncomeIndexer)Enum.Parse(typeof(FixedIncomeIndexer), parts[24]),
                                 DateTime.Parse(parts[2]),
-                                DateTime.Parse(parts[16])));
+                                DateTime.Parse(parts[16]));
+                            fixedIncome.LastBondValueUpdate = lastBondValueUpdate;
+                            items.Add(fixedIncome);
                         }
                     }
                 }

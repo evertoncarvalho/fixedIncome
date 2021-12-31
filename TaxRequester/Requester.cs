@@ -32,7 +32,7 @@ namespace TaxRequester
                 if (ipcaData.TaxDate < aux)
                 {
                     ipcaData.TaxDate = aux;
-                    ipcaData.Tax = float.Parse(parts[1].Replace(".", ","));
+                    ipcaData.Tax = double.Parse(parts[1].Replace(".", ","));
                 }
             }
             return ipcaData;

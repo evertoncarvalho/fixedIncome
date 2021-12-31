@@ -37,11 +37,11 @@ namespace FixedIncomeManager
         /// <summary>
         /// The value pay for the bonds
         /// </summary>
-        public float Capital { get; private set; }
+        public double Capital { get; private set; }
         /// <summary>
         /// Tax remuneration
         /// </summary>
-        public float Remuneration { get; private set; }
+        public double Remuneration { get; private set; }
         /// <summary>
         /// Flavor of the fixed income.
         /// </summary>
@@ -69,23 +69,23 @@ namespace FixedIncomeManager
         /// <summary>
         /// Bond value at registration or before rate update
         /// </summary>
-        public float LastBondValue { get; private set; }
+        public double LastBondValue { get; private set; }
         /// <summary>
         /// Current bond value projection
         /// </summary>
-        public float CurrentBondValue { get; set; }
+        public double CurrentBondValue { get; set; }
         /// <summary>
         /// Bond value projection at the expiration
         /// </summary>
-        public float BondValueAtExpiration { get; set; }
+        public double BondValueAtExpiration { get; set; }
         /// <summary>
         /// Bond value projection at the expiration without fees
         /// </summary>
-        public float NetBondValueAtExpiration { get; set; }
+        public double NetBondValueAtExpiration { get; set; }
         /// <summary>
         /// Net Profit at bonds the expiration
         /// </summary>
-        public float Profit
+        public double Profit
         {
             get
             {
@@ -95,7 +95,7 @@ namespace FixedIncomeManager
         /// <summary>
         /// Brazilian taxation for fixed income
         /// </summary>
-        public virtual float Taxation
+        public virtual double Taxation
         {
             get
             {
@@ -125,9 +125,9 @@ namespace FixedIncomeManager
         public FixedIncomeData(
             string name,
             string broker,
-            float capital,
-            float lastBondValue,
-            float remuneration,
+            double capital,
+            double lastBondValue,
+            double remuneration,
             FixedIncomeType type,
             FixedIncomeTaxType taxType,
             FixedIncomeIndexer indexer,
@@ -146,9 +146,11 @@ namespace FixedIncomeManager
             Expiration = expiration;
         }
 
-        public float GetDailyTaxRemuneration(BaseTaxData taxData, bool netTax = false)
+        public double GetDailyPostTaxRemuneration(
+            BaseTaxData taxData,
+            bool netTax = false)
         {
-            float taxation = netTax
+            double taxation = netTax
                 ? 1f - Taxation
                 : 1f;
             if (Indexer == FixedIncomeIndexer.CDI)
@@ -158,37 +160,114 @@ namespace FixedIncomeManager
             return 1 + taxData.GetTaxDaily(Remuneration) * taxation;
         }
 
+        public double GetDailyPreTaxRemuneration(
+            BaseTaxData taxData,
+            bool netTax = false)
+        {
+            double taxation = netTax
+                ? 1f - Taxation
+                : 1f;
+            return 1 + taxation * taxData.GetTaxDaily(Remuneration);
+        }
+
         public void UpdateBondsValueProjections(
             BaseTaxData taxData,
             List<DateTime> holidays)
         {
-            CurrentBondValue =
-                LastBondValue *
-                (float)Math.Pow(
-                    GetDailyTaxRemuneration(taxData),
+            if (TaxType == FixedIncomeTaxType.PRE)
+            {
+                PreFixedProjection(
+                    taxData,
+                    holidays);
+            }
+            else
+            {
+                PostFixedProjection(
+                    taxData,
+                    holidays);
+            }
+        }
+
+        public void PostFixedProjection(
+            BaseTaxData taxData,
+            List<DateTime> holidays)
+        {
+            CurrentBondValue = GetFutureValue(
+                LastBondValue,
+                LastBondValueUpdate,
+                DateTime.Now.Date,
+                holidays,
+                taxData,
+                FixedIncomeTaxType.POST);
+            BondValueAtExpiration = GetFutureValue(
+                LastBondValue,
+                LastBondValueUpdate,
+                Expiration,
+                holidays,
+                taxData,
+                FixedIncomeTaxType.POST);
+            NetBondValueAtExpiration = GetFutureValue(
+                CurrentBondValue,
+                DateTime.Now.Date,
+                Expiration,
+                holidays,
+                taxData,
+                FixedIncomeTaxType.POST,
+                true);
+        }
+
+        public void PreFixedProjection(
+            BaseTaxData taxData,
+            List<DateTime> holidays)
+        {
+            CurrentBondValue = GetFutureValue(
+                Capital,
+                Hiring,
+                DateTime.Now,
+                holidays,
+                taxData,
+                FixedIncomeTaxType.PRE);
+            BondValueAtExpiration = GetFutureValue(
+                Capital,
+                Hiring,
+                Expiration,
+                holidays,
+                taxData,
+                FixedIncomeTaxType.PRE);
+            NetBondValueAtExpiration = GetFutureValue(
+                Capital,
+                Hiring,
+                Expiration,
+                holidays,
+                taxData,
+                FixedIncomeTaxType.PRE,
+                true);
+        }
+
+        public double GetFutureValue(
+            double initialValue,
+            DateTime begin,
+            DateTime end,
+            List<DateTime> holidays,
+            BaseTaxData taxData,
+            FixedIncomeTaxType taxType,
+            bool netTax = false)
+        {
+            return initialValue *
+                Math.Pow(
+                    taxType == FixedIncomeTaxType.POST
+                        ? GetDailyPostTaxRemuneration(taxData, netTax)
+                        : GetDailyPreTaxRemuneration(taxData, netTax),
                     GetWorkingDaysBetween(
-                        LastBondValueUpdate,
-                        DateTime.Now.Date,
-                        holidays) - 1);
-            BondValueAtExpiration =
-                LastBondValue *
-                (float)Math.Pow(
-                    GetDailyTaxRemuneration(taxData),
-                    GetWorkingDaysBetween(
-                        LastBondValueUpdate,
-                        Expiration,
-                        holidays) - 1);
-            NetBondValueAtExpiration =
-                CurrentBondValue *
-                (float)Math.Pow(
-                    GetDailyTaxRemuneration(taxData, true),
-                    GetWorkingDaysBetween(
-                        DateTime.Now.Date,
-                        Expiration,
+                        begin,
+                        end,
                         holidays) - 1);
         }
 
-        public int GetWorkingDaysBetween(DateTime begin, DateTime end, List<DateTime> holidays)
+        public int GetWorkingDaysBetween(
+            DateTime begin,
+            DateTime end,
+            List<DateTime> holidays)
         {
             TimeSpan between = end - begin;
             int workingDays = between.Days + 1;

@@ -20,9 +20,9 @@ namespace FixedIncomeManager
         public bool Add(
             string name,
             string broker,
-            float capital,
-            float remuneration,
-            float lastBondValue,
+            double capital,
+            double remuneration,
+            double lastBondValue,
             FixedIncomeType type,
             FixedIncomeTaxType taxType,
             FixedIncomeIndexer indexer,
@@ -66,12 +66,9 @@ namespace FixedIncomeManager
             List<DateTime> holidays = GetHolidays();
             foreach (FixedIncomeData item in _fixedIncome)
             {
-                if (item.TaxType == FixedIncomeTaxType.PRE)
-                {
-                    continue;
-                }
                 item.UpdateBondsValueProjections(
                     item.Indexer == FixedIncomeIndexer.CDI
+                    || item.TaxType == FixedIncomeTaxType.PRE
                         ? cdi
                         : ipca,
                     holidays);

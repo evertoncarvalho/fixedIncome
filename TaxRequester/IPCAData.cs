@@ -34,7 +34,7 @@ namespace TaxRequester
             }
         }
 
-        public override float GetTaxDaily(float inputTax = 0)
+        public override double GetTaxDaily(double inputTax = 0)
         {
             inputTax += Tax;
             return base.GetTaxDaily(inputTax);

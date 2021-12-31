@@ -21,11 +21,11 @@ namespace TaxRequester
 
         [JsonProperty("taxa")]
         [JsonConverter(typeof(TaxConverter))]
-        public override float Tax { get; set; } = 0f;
+        public override double Tax { get; set; } = 0f;
 
         [JsonProperty("indice")]
         [JsonConverter(typeof(TaxConverter))]
-        public float Index { get; set; } = 0f;
+        public double Index { get; set; } = 0f;
 
         [JsonProperty("dataTaxa")]
         [JsonConverter(typeof(TaxDateConverter))]
