@@ -19,7 +19,7 @@ namespace FixedIncomeManager.Persistence
         public SpreadsheetCsvParser(string sourceString)
         {
             _sourceString = string.IsNullOrWhiteSpace(sourceString)
-                ? "fixedIncome.csv"
+                ? "fixedIncomeSample.csv"
                 : sourceString;
         }
 
@@ -41,6 +41,8 @@ namespace FixedIncomeManager.Persistence
                                 parts[6],
                                 parts[17],
                                 float.Parse(parts[0], System.Globalization.NumberStyles.Currency),
+                                float.Parse(parts[1], System.Globalization.NumberStyles.Currency),
+                                float.Parse(parts[3].Trim('%')),
                                 (FixedIncomeType)Enum.Parse(typeof(FixedIncomeType), parts[18]),
                                 GetFixedIncomeTaxType(parts[19]),
                                 (FixedIncomeIndexer)Enum.Parse(typeof(FixedIncomeIndexer), parts[24]),
@@ -50,9 +52,10 @@ namespace FixedIncomeManager.Persistence
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //TODO log
+                Console.WriteLine(ex.Message);
             }
             return items;
         }
@@ -65,6 +68,7 @@ namespace FixedIncomeManager.Persistence
         private FixedIncomeTaxType GetFixedIncomeTaxType(string taxType)
         {
             return taxType.Equals("Pós")
+                || taxType.Equals("P�s")
                 ? FixedIncomeTaxType.POST
                 : FixedIncomeTaxType.PRE;
         }

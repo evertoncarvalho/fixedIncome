@@ -33,5 +33,11 @@ namespace TaxRequester
                     + " data " + TaxDate;
             }
         }
+
+        public override float GetTaxDaily(float inputTax = 0)
+        {
+            inputTax += Tax;
+            return base.GetTaxDaily(inputTax);
+        }
     }
 }

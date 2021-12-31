@@ -19,6 +19,8 @@ namespace TaxRequesterTest
                 "name",
                 "broker",
                 0f,
+                0f,
+                0f,
                 FixedIncomeType.CDB,
                 FixedIncomeTaxType.POST,
                 FixedIncomeIndexer.CDI,
@@ -63,6 +65,39 @@ namespace TaxRequesterTest
             Assert.IsTrue(persistency.Get().Count == 1);
         }
 
+        [TestMethod]
+        public void WorkingDaysCountOverTheYear()
+        {
+            Manager manager = new Manager();
+            int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
+                new DateTime(2021, 12, 30),
+                new DateTime(2024, 12, 31),
+                manager.GetHolidays("D:/projects/fixedIncome/holidays.csv"));
+            Assert.IsTrue(wokingDays == 756);
+        }
+
+        [TestMethod]
+        public void WorkingDaysCountWeekend()
+        {
+            Manager manager = new Manager();
+            int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
+                new DateTime(2021, 12, 25),
+                new DateTime(2021, 12, 26),
+                manager.GetHolidays("D:/projects/fixedIncome/holidays.csv"));
+            Assert.IsTrue(wokingDays == 0);
+        }
+
+        [TestMethod]
+        public void WorkingDaysCountFridayToMonday()
+        {
+            Manager manager = new Manager();
+            int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
+                new DateTime(2021, 12, 31),
+                new DateTime(2022, 1, 3),
+                manager.GetHolidays("D:/projects/fixedIncome/holidays.csv"));
+            Assert.IsTrue(wokingDays == 2);
+        }
+
         private JsonPersistencyController GetAndSetupJsonPersistencyController()
         {
             string persistencyFileName = "persistencyTest.json";
@@ -75,6 +110,8 @@ namespace TaxRequesterTest
             return new FixedIncomeData(
                 "name",
                 "broker",
+                0f,
+                0f,
                 0f,
                 FixedIncomeType.CDB,
                 FixedIncomeTaxType.POST,

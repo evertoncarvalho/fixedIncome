@@ -5,6 +5,7 @@ namespace TaxRequester
 {
     //{ "taxa":"7,65","dataTaxa":"04/11/2021","indice":"33.284,31","dataIndice":"05/11/2021"}
     public class CDIData
+        : BaseTaxData
     {
         [JsonIgnore]
         public virtual string AsString
@@ -20,7 +21,7 @@ namespace TaxRequester
 
         [JsonProperty("taxa")]
         [JsonConverter(typeof(TaxConverter))]
-        public float Tax { get; set; } = 0f;
+        public override float Tax { get; set; } = 0f;
 
         [JsonProperty("indice")]
         [JsonConverter(typeof(TaxConverter))]

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FixedIncomeManager\FixedIncomeManager.csproj" />
     <ProjectReference Include="..\TaxRequester\TaxRequester.csproj" />
   </ItemGroup>
 
