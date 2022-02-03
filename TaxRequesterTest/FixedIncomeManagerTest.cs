@@ -33,7 +33,7 @@ namespace TaxRequesterTest
         public void TryLoadCsv()
         {
             SpreadsheetCsvParser parser = new SpreadsheetCsvParser("D:/projects/fixedIncome/fixedIncomeSample.csv");
-            Assert.IsTrue(parser.Get().Count == 42);
+            Assert.IsTrue(parser.GetBonds().Count == 42);
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace TaxRequesterTest
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
             List<FixedIncomeData> items = new List<FixedIncomeData>();
             items.Add(GetFixedIncomeDataSample());
-            Assert.IsTrue(persistency.Save(items));
+            Assert.IsTrue(persistency.SaveBonds(items));
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ namespace TaxRequesterTest
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
             List<FixedIncomeData> items = new List<FixedIncomeData>();
             items.Add(GetFixedIncomeDataSample());
-            persistency.Save(items);
+            persistency.SaveBonds(items);
             Assert.IsTrue(File.Exists(persistency.SourceString));
         }
 
@@ -61,8 +61,8 @@ namespace TaxRequesterTest
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
             List<FixedIncomeData> items = new List<FixedIncomeData>();
             items.Add(GetFixedIncomeDataSample());
-            persistency.Save(items);
-            Assert.IsTrue(persistency.Get().Count == 1);
+            persistency.SaveBonds(items);
+            Assert.IsTrue(persistency.GetBonds().Count == 1);
         }
 
         [TestMethod]

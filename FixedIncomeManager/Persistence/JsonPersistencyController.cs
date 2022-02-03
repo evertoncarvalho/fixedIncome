@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using TaxRequester;
 
 namespace FixedIncomeManager.Persistence
 {
     public class JsonPersistencyController
-        : IPersistencyController<FixedIncomeData>
+        : IBondsPersistency<FixedIncomeData, CDIData>
     {
         private string _sourceString = null;
         public string SourceString
@@ -24,7 +25,7 @@ namespace FixedIncomeManager.Persistence
                 : sourceString;
         }
 
-        public ICollection<FixedIncomeData> Get()
+        public ICollection<FixedIncomeData> GetBonds()
         {
             List<FixedIncomeData> items = new List<FixedIncomeData>(0);
             if (File.Exists(SourceString))
@@ -41,7 +42,7 @@ namespace FixedIncomeManager.Persistence
             return items;
         }
 
-        public bool Save(ICollection<FixedIncomeData> items)
+        public bool SaveBonds(ICollection<FixedIncomeData> items)
         {
             try
             {
@@ -58,6 +59,14 @@ namespace FixedIncomeManager.Persistence
             {
                 return false;
             }
+        }
+        public bool SaveTax(CDIData tax)
+        {
+            return false;
+        }
+        public CDIData GetTax(Type taxType)
+        {
+            return null;
         }
     }
 }

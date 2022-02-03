@@ -9,11 +9,15 @@ namespace FixedIncomeManager
     public class Manager
     {
         private List<FixedIncomeData> _fixedIncome = new List<FixedIncomeData>();
-        private IPersistencyController<FixedIncomeData> _persistency = new JsonPersistencyController();
-        
+        private IBondsPersistency<FixedIncomeData, CDIData> _persistency = new JsonPersistencyController();
+
+        public CDIData CDIData { get; private set; } = null;
+
+        public IPCAData IPCAData { get; private set; } = null;
+
         public Manager()
         {
-            _fixedIncome.AddRange(_persistency.Get());
+            _fixedIncome.AddRange(_persistency.GetBonds());
             Initialize();
         }
 
@@ -53,24 +57,36 @@ namespace FixedIncomeManager
             return _fixedIncome;
         }
 
+        public FixedIncomeSummaryData GetSummary()
+        {
+            FixedIncomeSummaryData data = new FixedIncomeSummaryData();
+            foreach(FixedIncomeData item in _fixedIncome)
+            {
+                data.Capital += item.Capital;
+                data.CurrentValue += item.CurrentBondValue;
+                data.ValueAtExpiration += item.BondValueAtExpiration;
+            }
+            return data;
+        }
+
         public void Save()
         {
-            _persistency.Save(_fixedIncome);
+            _persistency.SaveBonds(_fixedIncome);
         }
 
         protected void Initialize()
         {
             Requester requester = new Requester();
-            CDIData cdi = requester.GetCDI();
-            IPCAData ipca = requester.GetIPCALast12Months();
+            CDIData = requester.GetCDI();
+            IPCAData = requester.GetIPCALast12Months();
             List<DateTime> holidays = GetHolidays();
             foreach (FixedIncomeData item in _fixedIncome)
             {
                 item.UpdateBondsValueProjections(
                     item.Indexer == FixedIncomeIndexer.CDI
                     || item.TaxType == FixedIncomeTaxType.PRE
-                        ? cdi
-                        : ipca,
+                        ? CDIData
+                        : IPCAData,
                     holidays);
             }
         }

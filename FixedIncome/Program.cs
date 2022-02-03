@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FixedIncomeManager;
+using System;
 using System.IO;
 
 namespace FixedIncome
@@ -9,9 +10,10 @@ namespace FixedIncome
         {
             CreatePersistencyDirectory();
             //new FixedIncomeManager.Persistence.JsonPersistencyController().Save(new FixedIncomeManager.Persistence.SpreadsheetCsvParser("fixedIncomeSample.csv").Get());
-            FixedIncomeManager.Manager manager = new FixedIncomeManager.Manager();
+            Manager manager = new Manager();
             Print(manager);
             manager.Save();
+            Console.ReadKey();
         }
 
         static void CreatePersistencyDirectory()
@@ -23,7 +25,23 @@ namespace FixedIncome
             }
         }
 
-        static void Print(FixedIncomeManager.Manager manager)
+        static void Print(Manager manager)
+        {
+            PrintTax(manager);
+            PrintBonds(manager);
+            //PrintSummary(manager);
+        }
+
+        static void PrintTax(Manager manager)
+        {
+            Console.WriteLine("cdi em {0}: {1}%\t\tipca em {2}: {3}%\n",
+                manager.CDIData.TaxDate.ToString("dd/MM/yy"),
+                manager.CDIData.Tax,
+                manager.IPCAData.TaxDate.ToString("dd/MM/yy"),
+                manager.IPCAData.Tax);
+        }
+
+        static void PrintBonds(Manager manager)
         {
             int count = 0;
             foreach (var item in manager.Get())
@@ -38,7 +56,18 @@ namespace FixedIncome
                     item.Type,
                     item.Indexer,
                     item.Name);
+                if (count == 10)
+                    break;
             }
+        }
+
+        static void PrintSummary(Manager manager)
+        {
+            FixedIncomeSummaryData summary = manager.GetSummary();
+            Console.WriteLine("\nCapital:\t\t{0:C}\nCurrent Value:\t\t{1:C}\nAt Expiration:\t\t{2:C}",
+                summary.Capital,
+                summary.CurrentValue,
+                summary.ValueAtExpiration);
         }
     }
 }
