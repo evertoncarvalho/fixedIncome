@@ -29,7 +29,7 @@ namespace FixedIncome
         {
             PrintTax(manager);
             PrintBonds(manager);
-            //PrintSummary(manager);
+            PrintSummary(manager);
         }
 
         static void PrintTax(Manager manager)
@@ -56,8 +56,6 @@ namespace FixedIncome
                     item.Type,
                     item.Indexer,
                     item.Name);
-                if (count == 10)
-                    break;
             }
         }
 
