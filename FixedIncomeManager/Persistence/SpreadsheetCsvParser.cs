@@ -69,12 +69,12 @@ namespace FixedIncomeManager.Persistence
             return true;
         }
         
-        public bool SaveTax(CDIData tax)
+        public bool SaveRates(ICollection<CDIData> rates)
         {
             return false;
         }
 
-        public CDIData GetTax(Type taxType)
+        public ICollection<CDIData> GetRates()
         {
             return null;
         }

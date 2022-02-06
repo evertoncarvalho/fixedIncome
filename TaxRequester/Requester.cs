@@ -12,33 +12,43 @@ namespace TaxRequester
         public CDIData GetCDI()
         {
             string responseContent = RequestData(app.Default.CDIEndpoint);
-            return JsonConvert.DeserializeObject<CDIData>(responseContent);
+            return GetCDI(responseContent);
+        }
+
+        protected CDIData GetCDI(string cdiAsJson)
+        {
+            return JsonConvert.DeserializeObject<CDIData>(cdiAsJson);
         }
 
         public IPCAData GetIPCALast12Months()
         {
             string responseContent = RequestData(app.Default.IPCAEndpoint);
-            string[] ipcaSerie = ParseIPCASerie(responseContent);
+            return GetIPCALast12Months(responseContent);
+        }
+
+        protected IPCAData GetIPCALast12Months(string ipcaAsJson)
+        {
+            string[] ipcaSerie = ParseIPCASerie(ipcaAsJson);
             return GetIPCADataFromSerie(ipcaSerie);
         }
 
-        private IPCAData GetIPCADataFromSerie(string[] ipcaSerie)
+        protected IPCAData GetIPCADataFromSerie(string[] ipcaSerie)
         {
             IPCAData ipcaData = new IPCAData();
             foreach (string item in ipcaSerie)
             {
                 string[] parts = item.Split(':');
                 DateTime aux = DateTime.ParseExact(parts[0], "yyyyMM", null);
-                if (ipcaData.TaxDate < aux)
+                if (ipcaData.RateDate < aux)
                 {
-                    ipcaData.TaxDate = aux;
-                    ipcaData.Tax = double.Parse(parts[1].Replace(".", ","));
+                    ipcaData.RateDate = aux;
+                    ipcaData.Rate = double.Parse(parts[1].Replace(".", ","));
                 }
             }
             return ipcaData;
         }
 
-        private string[] ParseIPCASerie(string resposeFromIBGE)
+        protected string[] ParseIPCASerie(string resposeFromIBGE)
         {
             string ipca12Id = "1737";
             string ipcaSerieId = "serie\":{";

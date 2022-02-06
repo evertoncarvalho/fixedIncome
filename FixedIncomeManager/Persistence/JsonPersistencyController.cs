@@ -17,56 +17,76 @@ namespace FixedIncomeManager.Persistence
                 return _sourceString;
             }
         }
+        public string RateSourceString { get; private set; }
 
-        public JsonPersistencyController(string sourceString = null)
+        public JsonPersistencyController(string sourceString = "persistency")
         {
-            _sourceString = string.IsNullOrWhiteSpace(sourceString)
-                ? "persistency/fixedIncome.json"
-                : sourceString;
+            _sourceString = sourceString + "/fixedIncome.json";
+            RateSourceString = sourceString + "/rates.json";
+        }
+
+        public JsonPersistencyController(string directory, string fileName)
+        {
+            _sourceString = $"{directory}/{fileName}.json";
+            RateSourceString = $"{directory}/{fileName}Rates.json";
         }
 
         public ICollection<FixedIncomeData> GetBonds()
         {
-            List<FixedIncomeData> items = new List<FixedIncomeData>(0);
-            if (File.Exists(SourceString))
-            {
-                using (StreamReader reader = new StreamReader(SourceString))
-                {
-                    string line = null;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        items.Add(JsonConvert.DeserializeObject<FixedIncomeData>(line));
-                    }
-                }
-            }
-            return items;
+            return ReadDatabase<FixedIncomeData>(_sourceString);
         }
 
         public bool SaveBonds(ICollection<FixedIncomeData> items)
         {
+            return Save(items, _sourceString);
+        }
+
+        public bool SaveRates(ICollection<CDIData> rates)
+        {
+            return Save(rates, RateSourceString);
+        }
+
+        public ICollection<CDIData> GetRates()
+        {
+            return ReadDatabase<CDIData>(RateSourceString);
+        }
+
+        private bool Save<T>(ICollection<T> content,
+            string sourceString)
+        {
             try
             {
-                using(StreamWriter writer = new StreamWriter(SourceString))
+                using (StreamWriter writer = new StreamWriter(sourceString))
                 {
-                    foreach(FixedIncomeData item in items)
+                    foreach (T item in content)
                     {
                         writer.WriteLine(JsonConvert.SerializeObject(item));
                     }
                 }
                 return true;
             }
-            catch(Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
-        public bool SaveTax(CDIData tax)
+
+        private ICollection<T> ReadDatabase<T>(string sourceString)
         {
-            return false;
-        }
-        public CDIData GetTax(Type taxType)
-        {
-            return null;
+            List<T> items = new List<T>(0);
+            if (File.Exists(sourceString))
+            {
+                using (StreamReader reader = new StreamReader(sourceString))
+                {
+                    string line = null;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        items.Add(JsonConvert.DeserializeObject<T>(line));
+                    }
+                }
+            }
+            return items;
         }
     }
 }

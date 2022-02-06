@@ -35,10 +35,10 @@ namespace FixedIncome
         static void PrintTax(Manager manager)
         {
             Console.WriteLine("cdi em {0}: {1}%\t\tipca em {2}: {3}%\n",
-                manager.CDIData.TaxDate.ToString("dd/MM/yy"),
-                manager.CDIData.Tax,
-                manager.IPCAData.TaxDate.ToString("dd/MM/yy"),
-                manager.IPCAData.Tax);
+                manager.CDIData.RateDate.ToString("dd/MM/yy"),
+                manager.CDIData.Rate,
+                manager.IPCAData.RateDate.ToString("dd/MM/yy"),
+                manager.IPCAData.Rate);
         }
 
         static void PrintBonds(Manager manager)

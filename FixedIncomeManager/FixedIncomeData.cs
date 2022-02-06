@@ -147,7 +147,7 @@ namespace FixedIncomeManager
         }
 
         public double GetDailyPostTaxRemuneration(
-            BaseTaxData taxData,
+            BaseRateData rateData,
             bool netTax = false)
         {
             double taxation = netTax
@@ -155,41 +155,41 @@ namespace FixedIncomeManager
                 : 1f;
             if (Indexer == FixedIncomeIndexer.CDI)
             {
-                return 1 + Remuneration * taxation / 100 * taxData.GetTaxDaily();
+                return 1 + Remuneration * taxation / 100 * rateData.GetRateDaily();
             }
-            return 1 + taxData.GetTaxDaily(Remuneration) * taxation;
+            return 1 + rateData.GetRateDaily(Remuneration) * taxation;
         }
 
         public double GetDailyPreTaxRemuneration(
-            BaseTaxData taxData,
+            BaseRateData rateData,
             bool netTax = false)
         {
             double taxation = netTax
                 ? 1f - Taxation
                 : 1f;
-            return 1 + taxation * taxData.GetTaxDaily(Remuneration);
+            return 1 + taxation * rateData.GetRateDaily(Remuneration);
         }
 
         public void UpdateBondsValueProjections(
-            BaseTaxData taxData,
+            BaseRateData rateData,
             List<DateTime> holidays)
         {
             if (TaxType == FixedIncomeTaxType.PRE)
             {
                 PreFixedProjection(
-                    taxData,
+                    rateData,
                     holidays);
             }
             else
             {
                 PostFixedProjection(
-                    taxData,
+                    rateData,
                     holidays);
             }
         }
 
         public void PostFixedProjection(
-            BaseTaxData taxData,
+            BaseRateData rateData,
             List<DateTime> holidays)
         {
             CurrentBondValue = GetFutureValue(
@@ -197,27 +197,27 @@ namespace FixedIncomeManager
                 LastBondValueUpdate,
                 DateTime.Now.Date,
                 holidays,
-                taxData,
+                rateData,
                 FixedIncomeTaxType.POST);
             BondValueAtExpiration = GetFutureValue(
                 LastBondValue,
                 LastBondValueUpdate,
                 Expiration,
                 holidays,
-                taxData,
+                rateData,
                 FixedIncomeTaxType.POST);
             NetBondValueAtExpiration = GetFutureValue(
                 CurrentBondValue,
                 DateTime.Now.Date,
                 Expiration,
                 holidays,
-                taxData,
+                rateData,
                 FixedIncomeTaxType.POST,
                 true);
         }
 
         public void PreFixedProjection(
-            BaseTaxData taxData,
+            BaseRateData rateData,
             List<DateTime> holidays)
         {
             CurrentBondValue = GetFutureValue(
@@ -225,21 +225,21 @@ namespace FixedIncomeManager
                 Hiring,
                 DateTime.Now,
                 holidays,
-                taxData,
+                rateData,
                 FixedIncomeTaxType.PRE);
             BondValueAtExpiration = GetFutureValue(
                 Capital,
                 Hiring,
                 Expiration,
                 holidays,
-                taxData,
+                rateData,
                 FixedIncomeTaxType.PRE);
             NetBondValueAtExpiration = GetFutureValue(
                 Capital,
                 Hiring,
                 Expiration,
                 holidays,
-                taxData,
+                rateData,
                 FixedIncomeTaxType.PRE,
                 true);
         }
@@ -249,15 +249,15 @@ namespace FixedIncomeManager
             DateTime begin,
             DateTime end,
             List<DateTime> holidays,
-            BaseTaxData taxData,
+            BaseRateData rateData,
             FixedIncomeTaxType taxType,
-            bool netTax = false)
+            bool netRate = false)
         {
             return initialValue *
                 Math.Pow(
                     taxType == FixedIncomeTaxType.POST
-                        ? GetDailyPostTaxRemuneration(taxData, netTax)
-                        : GetDailyPreTaxRemuneration(taxData, netTax),
+                        ? GetDailyPostTaxRemuneration(rateData, netRate)
+                        : GetDailyPreTaxRemuneration(rateData, netRate),
                     GetWorkingDaysBetween(
                         begin,
                         end,

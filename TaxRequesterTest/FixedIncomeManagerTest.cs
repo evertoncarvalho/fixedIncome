@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using TaxRequester;
 
 namespace TaxRequesterTest
 {
@@ -37,12 +38,32 @@ namespace TaxRequesterTest
         }
 
         [TestMethod]
-        public void JsonPersistencyControllerSave()
+        public void JsonPersistencyControllerSaveBonds()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
             List<FixedIncomeData> items = new List<FixedIncomeData>();
             items.Add(GetFixedIncomeDataSample());
             Assert.IsTrue(persistency.SaveBonds(items));
+        }
+
+        [TestMethod]
+        public void JsonPersistencyControllerSaveRate()
+        {
+            JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
+            List<CDIData> items = new List<CDIData>();
+            items.Add(GetRateDataSample(9, DateTime.Now.Date));
+            Assert.IsTrue(persistency.SaveRates(items));
+        }
+
+        [TestMethod]
+        public void JsonPersistencyControllerGetRates()
+        {
+            JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
+            List<CDIData> items = new List<CDIData>();
+            items.Add(GetRateDataSample(9, DateTime.Now.Date));
+            items.Add(GetRateDataSample(9, DateTime.Now.Date));
+            Assert.IsTrue(persistency.SaveRates(items));
+            Assert.AreEqual(persistency.GetRates().Count, 2);
         }
 
         [TestMethod]
@@ -100,9 +121,11 @@ namespace TaxRequesterTest
 
         private JsonPersistencyController GetAndSetupJsonPersistencyController()
         {
-            string persistencyFileName = "persistencyTest.json";
-            File.Delete(persistencyFileName);
-            return new JsonPersistencyController(persistencyFileName);
+            string persistencyFileName = "persistencyTest";
+            JsonPersistencyController jsonPersistency = new JsonPersistencyController(".", persistencyFileName);
+            File.Delete(jsonPersistency.SourceString);
+            File.Delete(jsonPersistency.RateSourceString);
+            return jsonPersistency;
         }
 
         private FixedIncomeData GetFixedIncomeDataSample()
@@ -118,6 +141,17 @@ namespace TaxRequesterTest
                 FixedIncomeIndexer.CDI,
                 DateTime.Now,
                 DateTime.Now);
+        }
+
+        private CDIData GetRateDataSample(
+            double rate,
+            DateTime date)
+        {
+            return new CDIData()
+            {
+                Rate = rate,
+                RateDate = date
+            };
         }
     }
 }

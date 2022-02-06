@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace TaxRequester
 {
-    public class TaxConverter : JsonConverter
+    public class RateConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -29,7 +29,7 @@ namespace TaxRequester
         }
     }
 
-    public class TaxDateConverter : JsonConverter
+    public class RateDateConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -45,9 +45,12 @@ namespace TaxRequester
             return DateTime.Parse(reader.Value.ToString(), new CultureInfo("pt-BR", false));
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(
+            JsonWriter writer,
+            object value,
+            JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            writer.WriteValue(value);
         }
     }
 }

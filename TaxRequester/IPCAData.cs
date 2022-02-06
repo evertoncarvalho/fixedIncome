@@ -1,7 +1,6 @@
-﻿
-namespace TaxRequester
+﻿namespace TaxRequester
 {
-    /*"agregado":"1737",
+    /* "agregado":"1737",
      * "id":"2265",
      * "variavel":"IPCA - Variação acumulada em 12 meses",
      * "unidade":"%",
@@ -29,15 +28,14 @@ namespace TaxRequester
         {
             get
             {
-                return "ipca acumulado em 12 meses " + Tax
-                    + " data " + TaxDate;
+                return "ipca acumulado em 12 meses " + Rate
+                    + " data " + RateDate;
             }
         }
-
-        public override double GetTaxDaily(double inputTax = 0)
+        public override double GetRateDaily(double inputTax = 0)
         {
-            inputTax += Tax;
-            return base.GetTaxDaily(inputTax);
+            inputTax += Rate;
+            return base.GetRateDaily(inputTax);
         }
     }
 }
