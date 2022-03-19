@@ -6,17 +6,17 @@ using System.Collections.Generic;
 using System.IO;
 using TaxRequester;
 
-namespace TaxRequesterTest
+namespace TaxRequesterTest.FixedIncomeManager
 {
     [TestClass]
     public class FixedIncomeManagerTest
+        : Manager
     {
         [TestMethod]
         public void AddFixedIncome()
         {
-            FixedIncomeManager.Manager manager = new FixedIncomeManager.Manager();
-            int lastCount = manager.Get().Count;
-            manager.Add(
+            int lastCount = Get().Count;
+            Add(
                 "name",
                 "broker",
                 0f,
@@ -27,14 +27,7 @@ namespace TaxRequesterTest
                 FixedIncomeIndexer.CDI,
                 DateTime.Now,
                 DateTime.Now);
-            Assert.IsTrue(lastCount < manager.Get().Count);
-        }
-
-        [TestMethod]
-        public void TryLoadCsv()
-        {
-            SpreadsheetCsvParser parser = new SpreadsheetCsvParser("D:/projects/fixedIncome/fixedIncomeSample.csv");
-            Assert.IsTrue(parser.GetBonds().Count == 42);
+            Assert.IsTrue(lastCount < Get().Count);
         }
 
         [TestMethod]
@@ -89,11 +82,10 @@ namespace TaxRequesterTest
         [TestMethod]
         public void WorkingDaysCountOverTheYear()
         {
-            Manager manager = new Manager();
             int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
                 new DateTime(2021, 12, 30),
                 new DateTime(2024, 12, 31),
-                manager.GetHolidays("D:/projects/fixedIncome/holidays.csv"));
+                GetHolidays("D:/projects/fixedIncome/holidays.csv"));
             Assert.IsTrue(wokingDays == 756);
         }
 
@@ -104,7 +96,7 @@ namespace TaxRequesterTest
             int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
                 new DateTime(2021, 12, 25),
                 new DateTime(2021, 12, 26),
-                manager.GetHolidays("D:/projects/fixedIncome/holidays.csv"));
+                GetHolidays("D:/projects/fixedIncome/holidays.csv"));
             Assert.IsTrue(wokingDays == 0);
         }
 
@@ -115,7 +107,7 @@ namespace TaxRequesterTest
             int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
                 new DateTime(2021, 12, 31),
                 new DateTime(2022, 1, 3),
-                manager.GetHolidays("D:/projects/fixedIncome/holidays.csv"));
+                GetHolidays("D:/projects/fixedIncome/holidays.csv"));
             Assert.IsTrue(wokingDays == 2);
         }
 

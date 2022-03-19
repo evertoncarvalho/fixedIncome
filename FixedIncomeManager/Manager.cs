@@ -91,7 +91,7 @@ namespace FixedIncomeManager
             }
         }
 
-        public List<DateTime> GetHolidays(string path = "holidays.csv")
+        protected List<DateTime> GetHolidays(string path = "holidays.csv")
         {
             List<DateTime> holidays = new List<DateTime>(0);
             try

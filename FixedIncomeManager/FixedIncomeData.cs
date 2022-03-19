@@ -7,7 +7,9 @@ namespace FixedIncomeManager
     public enum FixedIncomeIndexer
         : short
     {
+        // Certificado de Depósito Interbancário
         CDI,
+        // Índice nacional de Preços ao Consumidor Amplo (12 meses)
         IPCA
     }
 
@@ -21,10 +23,18 @@ namespace FixedIncomeManager
     public enum FixedIncomeType
         : short
     {
+        // Letra de Câmbio
         LC,
+        // Letra de Crédito de Agronegócio
         LCA,
+        // Letra de Crédito Imobiliário
         LCI,
-        CDB
+        // Certificado de Depósito Bancário
+        CDB,
+        // Certificado de Recebíveis de Agronegócio (Não garantido pelo FGC - Fundo Garantidor de Crédito)
+        CRA,
+        // Certificado de Recebívies Imobiliário (Não garantido pelo FGC - Fundo Garantidor de Crédito) 
+        CRI
     }
 
     public class FixedIncomeData
@@ -48,7 +58,7 @@ namespace FixedIncomeManager
         /// <summary>
         /// Flavor of the fixed income.
         /// </summary>
-        public FixedIncomeType Type { get; private set; }
+        public FixedIncomeType Type { get; protected set; }
         /// <summary>
         /// Indicates when the remuneration can float.
         /// </summary>
@@ -60,11 +70,11 @@ namespace FixedIncomeManager
         /// <summary>
         /// Hiring date
         /// </summary>
-        public DateTime Hiring { get; private set; }
+        public DateTime Hiring { get; protected set; }
         /// <summary>
         /// Expiration Data
         /// </summary>
-        public DateTime Expiration { get; private set; }
+        public DateTime Expiration { get; protected set; }
         /// <summary>
         /// Update date of bond value. It changes when the remuneration tax change.
         /// </summary>
@@ -264,7 +274,7 @@ namespace FixedIncomeManager
                     GetWorkingDaysBetween(
                         begin,
                         end,
-                        holidays) - 1);
+                        holidays));
         }
 
         public int GetWorkingDaysBetween(

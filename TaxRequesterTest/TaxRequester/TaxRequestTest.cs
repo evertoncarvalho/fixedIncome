@@ -2,7 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using TaxRequester;
 
-namespace TaxRequesterTest
+namespace TaxRequesterTest.TaxRequester
 {
     [TestClass]
     public class TaxRequestTest

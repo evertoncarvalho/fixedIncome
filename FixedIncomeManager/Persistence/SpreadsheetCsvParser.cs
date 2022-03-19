@@ -38,20 +38,9 @@ namespace FixedIncomeManager.Persistence
                         DateTime lastBondValueUpdate = DateTime.Parse(parts[1]);
                         while ((line = reader.ReadLine()) != null)
                         {
-                            parts = line.Split(';');
-                            FixedIncomeData fixedIncome = new FixedIncomeData(
-                                parts[6],
-                                parts[17],
-                                double.Parse(parts[0], System.Globalization.NumberStyles.Currency),
-                                double.Parse(parts[1], System.Globalization.NumberStyles.Currency),
-                                double.Parse(parts[3].Trim('%')),
-                                (FixedIncomeType)Enum.Parse(typeof(FixedIncomeType), parts[18]),
-                                GetFixedIncomeTaxType(parts[19]),
-                                (FixedIncomeIndexer)Enum.Parse(typeof(FixedIncomeIndexer), parts[24]),
-                                DateTime.Parse(parts[2]),
-                                DateTime.Parse(parts[16]));
-                            fixedIncome.LastBondValueUpdate = lastBondValueUpdate;
-                            items.Add(fixedIncome);
+                            items.Add(GetFixedIncomeDataFromJson(
+                                line,
+                                lastBondValueUpdate));
                         }
                     }
                 }
@@ -79,12 +68,42 @@ namespace FixedIncomeManager.Persistence
             return null;
         }
 
-        private FixedIncomeTaxType GetFixedIncomeTaxType(string taxType)
+        protected FixedIncomeTaxType GetFixedIncomeTaxType(string taxType)
         {
             return taxType.Equals("Pós")
                 || taxType.Equals("P�s")
                 ? FixedIncomeTaxType.POST
                 : FixedIncomeTaxType.PRE;
+        }
+
+        protected FixedIncomeData GetFixedIncomeDataFromJson(
+            string csv,
+            DateTime? lastBondValueUpdate = null)
+        {
+            char separator = ';';
+            string[] parts = null;
+            if (string.IsNullOrEmpty(csv)
+                || csv.IndexOf(separator) == 0)
+            {
+                throw new ArgumentException("invalid csv");
+            }
+            parts = csv.Split(';');
+            FixedIncomeData fixedIncome = new FixedIncomeData(
+                parts[7],
+                parts[18],
+                double.Parse(parts[0], System.Globalization.NumberStyles.Currency),
+                double.Parse(parts[1], System.Globalization.NumberStyles.Currency),
+                double.Parse(parts[3].Trim('%')),
+                (FixedIncomeType)Enum.Parse(typeof(FixedIncomeType), parts[19]),
+                GetFixedIncomeTaxType(parts[20]),
+                (FixedIncomeIndexer)Enum.Parse(typeof(FixedIncomeIndexer), parts[4]),
+                DateTime.Parse(parts[2]),
+                DateTime.Parse(parts[17]));
+            if(lastBondValueUpdate != null)
+            {
+                fixedIncome.LastBondValueUpdate = lastBondValueUpdate.Value;
+            }
+            return fixedIncome;
         }
     }
 }

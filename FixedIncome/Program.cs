@@ -9,7 +9,7 @@ namespace FixedIncome
         static void Main(string[] args)
         {
             CreatePersistencyDirectory();
-            //new FixedIncomeManager.Persistence.JsonPersistencyController().Save(new FixedIncomeManager.Persistence.SpreadsheetCsvParser("fixedIncomeSample.csv").Get());
+            //new FixedIncomeManager.Persistence.JsonPersistencyController().SaveBonds(new FixedIncomeManager.Persistence.SpreadsheetCsvParser("fixedIncomeSample.csv").GetBonds());
             Manager manager = new Manager();
             Print(manager);
             manager.Save();
