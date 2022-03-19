@@ -5,18 +5,21 @@ using TaxRequester;
 namespace FixedIncomeManager
 {
     public enum FixedIncomeIndexer
+        : short
     {
         CDI,
         IPCA
     }
 
     public enum FixedIncomeTaxType
+        : short
     {
         PRE,
         POST
     }
 
     public enum FixedIncomeType
+        : short
     {
         LC,
         LCA,
