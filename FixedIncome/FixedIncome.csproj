@@ -10,4 +10,8 @@
     <ProjectReference Include="..\TaxRequester\TaxRequester.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(SolutionDir)holidays.csv $(TargetDir)holidays.csv&#xD;&#xA;copy $(SolutionDir)fixedIncomeSample.csv $(TargetDir)fixedIncomeSample.csv" />
+  </Target>
+
 </Project>
