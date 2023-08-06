@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+ï»¿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using TaxRequester;
 
@@ -11,7 +11,7 @@ namespace TaxRequesterTest.TaxRequester
         private const string _cdiDataAsJson = "{\"taxa\":\"7,65\",\"dataTaxa\":\"03/12/2021\","
             + "\"indice\":\"33.479,60\",\"dataIndice\":\"06/12/2021\"}";
         private const string _ipcaDataAsJson = "\"1737\":{\"id\":\"2265\","
-            + "\"variavel\":\"IPCA - Variação acumulada em 12 meses\","
+            + "\"variavel\":\"IPCA - VariaÃ§Ã£o acumulada em 12 meses\","
             + "\"unidade\":\"%\",\"resultados\":[{\"classificacoes\":[],"
             + "\"series\":[{\"localidade\":{\"id\":\"1\",\"nivel\":{\"id\":\"N1\",\"nome\":\"Brasil\"},"
             + "\"nome\":\"Brasil\"},\"serie\":{\"202111\":\"10.74\",\"202112\":\"10.06\"}}]}]}";
@@ -22,7 +22,7 @@ namespace TaxRequesterTest.TaxRequester
             BaseRateData cdiData = GetCDI(_cdiDataAsJson);
             Assert.IsTrue(cdiData is CDIData);
         }
-        
+
         [TestMethod]
         public void ParseCDIRateFromJson()
         {
@@ -34,7 +34,7 @@ namespace TaxRequesterTest.TaxRequester
         public void ParseCDIIndexFromJson()
         {
             CDIData cdiData = GetCDI(_cdiDataAsJson);
-            Assert.AreEqual(cdiData.Index, 33479,60);
+            Assert.AreEqual(cdiData.Index, 33479, 60);
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace TaxRequesterTest.TaxRequester
         public void GetCurrenteIPCADateFromJson()
         {
             BaseRateData ipcaData = GetIPCALast12Months(_ipcaDataAsJson);
-            Assert.AreEqual(ipcaData.RateDate, new DateTime(2021,12, 1));
+            Assert.AreEqual(ipcaData.RateDate, new DateTime(2021, 12, 1));
         }
     }
 }

@@ -2,16 +2,18 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FixedIncomeManager\FixedIncomeManager.csproj" />
     <ProjectReference Include="..\TaxRequester\TaxRequester.csproj" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(SolutionDir)holidays.csv $(TargetDir)holidays.csv&#xD;&#xA;copy $(SolutionDir)fixedIncomeSample.csv $(TargetDir)fixedIncomeSample.csv" />
-  </Target>
-
+	
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="copy $(SolutionDir)holidays.csv $(TargetDir)holidays.csv&#xD;&#xA;copy $(SolutionDir)fixedIncomeSample.csv $(TargetDir)fixedIncomeSample.csv" />
+	</Target>
+	
 </Project>

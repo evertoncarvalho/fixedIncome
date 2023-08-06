@@ -51,7 +51,7 @@ namespace FixedIncomeManager
             _fixedIncome.Add(fixedIncomeData);
             return true;
         }
-        
+
         public List<FixedIncomeData> Get()
         {
             return _fixedIncome;
@@ -60,7 +60,7 @@ namespace FixedIncomeManager
         public FixedIncomeSummaryData GetSummary()
         {
             FixedIncomeSummaryData data = new FixedIncomeSummaryData();
-            foreach(FixedIncomeData item in _fixedIncome)
+            foreach (FixedIncomeData item in _fixedIncome)
             {
                 data.Capital += item.Capital;
                 data.CurrentValue += item.CurrentBondValue;
