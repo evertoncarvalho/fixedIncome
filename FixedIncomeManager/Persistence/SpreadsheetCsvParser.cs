@@ -38,7 +38,7 @@ namespace FixedIncomeManager.Persistence
                         DateTime lastBondValueUpdate = DateTime.Parse(parts[1]);
                         while ((line = reader.ReadLine()) != null)
                         {
-                            items.Add(GetFixedIncomeDataFromJson(
+                            items.Add(GetFixedIncomeDataFromCSV(
                                 line,
                                 lastBondValueUpdate));
                         }
@@ -57,7 +57,7 @@ namespace FixedIncomeManager.Persistence
         {
             return true;
         }
-        
+
         public bool SaveRates(ICollection<CDIData> rates)
         {
             return false;
@@ -76,7 +76,7 @@ namespace FixedIncomeManager.Persistence
                 : FixedIncomeTaxType.PRE;
         }
 
-        protected FixedIncomeData GetFixedIncomeDataFromJson(
+        protected FixedIncomeData GetFixedIncomeDataFromCSV(
             string csv,
             DateTime? lastBondValueUpdate = null)
         {
@@ -90,16 +90,16 @@ namespace FixedIncomeManager.Persistence
             parts = csv.Split(';');
             FixedIncomeData fixedIncome = new FixedIncomeData(
                 parts[7],
-                parts[18],
+                parts[19],
                 double.Parse(parts[0], System.Globalization.NumberStyles.Currency),
                 double.Parse(parts[1], System.Globalization.NumberStyles.Currency),
                 double.Parse(parts[3].Trim('%')),
-                (FixedIncomeType)Enum.Parse(typeof(FixedIncomeType), parts[19]),
-                GetFixedIncomeTaxType(parts[20]),
+                (FixedIncomeType)Enum.Parse(typeof(FixedIncomeType), parts[20]),
+                GetFixedIncomeTaxType(parts[21]),
                 (FixedIncomeIndexer)Enum.Parse(typeof(FixedIncomeIndexer), parts[4]),
                 DateTime.Parse(parts[2]),
-                DateTime.Parse(parts[17]));
-            if(lastBondValueUpdate != null)
+                DateTime.Parse(parts[18]));
+            if (lastBondValueUpdate != null)
             {
                 fixedIncome.LastBondValueUpdate = lastBondValueUpdate.Value;
             }
