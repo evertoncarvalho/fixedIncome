@@ -1,4 +1,4 @@
-﻿using FixedIncomeManager;
+﻿using FixedIncomeManager.Models;
 using FixedIncomeManager.Persistence;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

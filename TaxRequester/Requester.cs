@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -20,10 +18,12 @@ namespace TaxRequester
             return JsonConvert.DeserializeObject<CDIData>(cdiAsJson);
         }
 
-        public IPCAData GetIPCALast12Months()
+        public IPCAData? GetIPCALast12Months()
         {
             string responseContent = RequestData(app.Default.IPCAEndpoint);
-            return GetIPCALast12Months(responseContent);
+            return !string.IsNullOrWhiteSpace(responseContent)
+                ? GetIPCALast12Months(responseContent)
+                : null;
         }
 
         protected IPCAData GetIPCALast12Months(string ipcaAsJson)
@@ -70,9 +70,17 @@ namespace TaxRequester
                     "user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
                 client.Headers.Add("Content-type:text/html; charset=utf-8");
-                using (StreamReader reader = new StreamReader(client.OpenRead(endpoint)))
+                try
                 {
-                    return reader.ReadToEnd();
+                    using (StreamReader reader = new StreamReader(client.OpenRead(endpoint)))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+                catch (WebException)
+                {
+                    //TODO log
+                    return string.Empty;
                 }
             }
         }

@@ -1,6 +1,5 @@
 ﻿using FixedIncomeManager;
-using System;
-using System.IO;
+using System.Text;
 
 namespace FixedIncome
 {
@@ -9,8 +8,10 @@ namespace FixedIncome
         static void Main(string[] args)
         {
             CreatePersistencyDirectory();
-            new FixedIncomeManager.Persistence.JsonPersistencyController().SaveBonds(new FixedIncomeManager.Persistence.SpreadsheetCsvParser("fixedIncomeSample.csv").GetBonds());
-            Manager manager = new Manager();
+            var persistency = new FixedIncomeManager.Persistence.JsonPersistencyController();
+            persistency.SaveBonds(
+                new FixedIncomeManager.Persistence.SpreadsheetCsvParser().GetBonds());
+            Manager manager = new Manager(persistency);
             Print(manager);
             manager.Save();
             Console.ReadKey();
@@ -34,11 +35,26 @@ namespace FixedIncome
 
         static void PrintTax(Manager manager)
         {
-            Console.WriteLine("cdi em {0}: {1}%\t\tipca em {2}: {3}%\n",
-                manager.CDIData.RateDate.ToString("dd/MM/yy"),
-                manager.CDIData.Rate,
-                manager.IPCAData.RateDate.ToString("dd/MM/yy"),
-                manager.IPCAData.Rate);
+            StringBuilder builder = new StringBuilder("cdi ");
+            string unnavailable = "indisponível\n";
+            if (manager.CDIRate != null)
+            {
+                builder.Append($"em {manager.CDIRate.RateDate.ToString("dd/MM/yy")}: {manager.CDIRate.RateDate}\n");
+            }
+            else
+            {
+                builder.Append(unnavailable);
+            }
+            builder.Append("ipca ");
+            if(manager.IPCA12Rate != null)
+            {
+                builder.Append($"em {manager.IPCA12Rate.RateDate.ToString("dd/MM/yy")}: {manager.IPCA12Rate.Rate}\n");
+            }
+            else
+            {
+                builder.Append("indisponível\n");
+            }
+            Console.WriteLine(builder);
         }
 
         static void PrintBonds(Manager manager)

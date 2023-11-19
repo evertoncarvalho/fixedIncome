@@ -1,12 +1,11 @@
-﻿using FixedIncomeManager;
+﻿using FixedIncomeManager.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace TaxRequesterTest.FixedIncomeManager
 {
     [TestClass]
     public class FixedIncomeDataTest
-        : FixedIncomeData
+        : FixedIncomeModel
     {
         public FixedIncomeDataTest()
             : base("name",

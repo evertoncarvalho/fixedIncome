@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace FixedIncomeManager.Persistence
 {
-    interface IBondsPersistency<Bond, Rate>
+    public interface IBondsPersistency<Bond, Rate>
     {
         public string SourceString { get; }
         public bool SaveBonds(ICollection<Bond> items);

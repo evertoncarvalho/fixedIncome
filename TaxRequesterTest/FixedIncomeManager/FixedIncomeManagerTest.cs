@@ -1,10 +1,9 @@
 ﻿using FixedIncomeManager;
+using FixedIncomeManager.Models;
 using FixedIncomeManager.Persistence;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using TaxRequester;
+using TaxRequesterTest.FixedIncomeManager.Persistence;
 
 namespace TaxRequesterTest.FixedIncomeManager
 {
@@ -12,6 +11,12 @@ namespace TaxRequesterTest.FixedIncomeManager
     public class FixedIncomeManagerTest
         : Manager
     {
+        public FixedIncomeManagerTest()
+            : base(new PersistencyStub())
+        {
+            //NOOP
+        }
+
         [TestMethod]
         public void AddFixedIncome()
         {
@@ -34,7 +39,7 @@ namespace TaxRequesterTest.FixedIncomeManager
         public void JsonPersistencyControllerSaveBonds()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
-            List<FixedIncomeData> items = new List<FixedIncomeData>();
+            List<FixedIncomeModel> items = new List<FixedIncomeModel>();
             items.Add(GetFixedIncomeDataSample());
             Assert.IsTrue(persistency.SaveBonds(items));
         }
@@ -43,8 +48,8 @@ namespace TaxRequesterTest.FixedIncomeManager
         public void JsonPersistencyControllerSaveRate()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
-            List<CDIData> items = new List<CDIData>();
-            items.Add(GetRateDataSample(9, DateTime.Now.Date));
+            List<RateModel> items = new List<RateModel>();
+            items.Add(GetRateDataSample(RateType.CDI, 9, DateTime.Now.Date));
             Assert.IsTrue(persistency.SaveRates(items));
         }
 
@@ -52,9 +57,9 @@ namespace TaxRequesterTest.FixedIncomeManager
         public void JsonPersistencyControllerGetRates()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
-            List<CDIData> items = new List<CDIData>();
-            items.Add(GetRateDataSample(9, DateTime.Now.Date));
-            items.Add(GetRateDataSample(9, DateTime.Now.Date));
+            List<RateModel> items = new List<RateModel>();
+            items.Add(GetRateDataSample(RateType.CDI, 9, DateTime.Now.Date));
+            items.Add(GetRateDataSample(RateType.IPCA12, 9, DateTime.Now.Date));
             Assert.IsTrue(persistency.SaveRates(items));
             Assert.AreEqual(persistency.GetRates().Count, 2);
         }
@@ -63,7 +68,7 @@ namespace TaxRequesterTest.FixedIncomeManager
         public void JsonPersistencyControllerSaveCreatePersistencyFile()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
-            List<FixedIncomeData> items = new List<FixedIncomeData>();
+            List<FixedIncomeModel> items = new List<FixedIncomeModel>();
             items.Add(GetFixedIncomeDataSample());
             persistency.SaveBonds(items);
             Assert.IsTrue(File.Exists(persistency.SourceString));
@@ -73,7 +78,7 @@ namespace TaxRequesterTest.FixedIncomeManager
         public void JsonPersistencyControllerGet()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
-            List<FixedIncomeData> items = new List<FixedIncomeData>();
+            List<FixedIncomeModel> items = new List<FixedIncomeModel>();
             items.Add(GetFixedIncomeDataSample());
             persistency.SaveBonds(items);
             Assert.IsTrue(persistency.GetBonds().Count == 1);
@@ -82,17 +87,16 @@ namespace TaxRequesterTest.FixedIncomeManager
         [TestMethod]
         public void WorkingDaysCountOverTheYear()
         {
-            int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
+            int workingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
                 new DateTime(2021, 12, 30),
                 new DateTime(2024, 12, 31),
                 GetHolidays("D:/projects/fixedIncome/holidays.csv"));
-            Assert.IsTrue(wokingDays == 756);
+            Assert.IsTrue(workingDays == 756);
         }
 
         [TestMethod]
         public void WorkingDaysCountWeekend()
         {
-            Manager manager = new Manager();
             int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
                 new DateTime(2021, 12, 25),
                 new DateTime(2021, 12, 26),
@@ -103,14 +107,24 @@ namespace TaxRequesterTest.FixedIncomeManager
         [TestMethod]
         public void WorkingDaysCountFridayToMonday()
         {
-            Manager manager = new Manager();
             int wokingDays = GetFixedIncomeDataSample().GetWorkingDaysBetween(
                 new DateTime(2021, 12, 31),
                 new DateTime(2022, 1, 3),
                 GetHolidays("D:/projects/fixedIncome/holidays.csv"));
             Assert.IsTrue(wokingDays == 2);
         }
-
+        [TestMethod]
+        public void DailyCDI()
+        {
+            Assert.AreEqual(0.000455131, new ProportionalCalculator().GetDailyRate(1d, 12.15));
+            Assert.AreEqual(0.000537055, new ProportionalCalculator().GetDailyRate(1.18, 12.15));
+        }
+        [TestMethod]
+        public void DailyIPCA()
+        {
+            Assert.AreEqual(0.000200806, new FixedRateCalculator().GetDailyRate(0d, 5.19));
+            Assert.AreEqual(0.000484566, new FixedRateCalculator().GetDailyRate(7.41, 5.19));
+        }
         private JsonPersistencyController GetAndSetupJsonPersistencyController()
         {
             string persistencyFileName = "persistencyTest";
@@ -120,9 +134,9 @@ namespace TaxRequesterTest.FixedIncomeManager
             return jsonPersistency;
         }
 
-        private FixedIncomeData GetFixedIncomeDataSample()
+        private FixedIncomeModel GetFixedIncomeDataSample()
         {
-            return new FixedIncomeData(
+            return new FixedIncomeModel(
                 "name",
                 "broker",
                 0f,
@@ -135,15 +149,22 @@ namespace TaxRequesterTest.FixedIncomeManager
                 DateTime.Now);
         }
 
-        private CDIData GetRateDataSample(
+        private RateModel GetRateDataSample(
+            RateType type,
             double rate,
             DateTime date)
         {
-            return new CDIData()
+            return new RateModelTest(type, rate, date);
+        }
+
+        class RateModelTest
+            : RateModel
+        {
+            public RateModelTest(RateType type, double rate, DateTime date)
+                : base(type)
             {
-                Rate = rate,
-                RateDate = date
-            };
+                UpdateRate(rate, date);
+            }
         }
     }
 }
