@@ -1,13 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using TaxRequester;
+﻿using FixedIncomeManager.Models;
+using Newtonsoft.Json;
 
 namespace FixedIncomeManager.Persistence
 {
     public class JsonPersistencyController
-        : IBondsPersistency<FixedIncomeData, CDIData>
+        : IBondsPersistency<FixedIncomeModel, RateModel>
     {
         private string _sourceString = null;
         public string SourceString
@@ -31,24 +28,24 @@ namespace FixedIncomeManager.Persistence
             RateSourceString = $"{directory}/{fileName}Rates.json";
         }
 
-        public ICollection<FixedIncomeData> GetBonds()
+        public ICollection<FixedIncomeModel> GetBonds()
         {
-            return ReadDatabase<FixedIncomeData>(_sourceString);
+            return ReadDatabase<FixedIncomeModel>(_sourceString);
         }
 
-        public bool SaveBonds(ICollection<FixedIncomeData> items)
+        public bool SaveBonds(ICollection<FixedIncomeModel> items)
         {
             return Save(items, _sourceString);
         }
 
-        public bool SaveRates(ICollection<CDIData> rates)
+        public bool SaveRates(ICollection<RateModel> rates)
         {
             return Save(rates, RateSourceString);
         }
 
-        public ICollection<CDIData> GetRates()
+        public ICollection<RateModel> GetRates()
         {
-            return ReadDatabase<CDIData>(RateSourceString);
+            return ReadDatabase<RateModel>(RateSourceString);
         }
 
         private bool Save<T>(ICollection<T> content,

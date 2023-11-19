@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using TaxRequester;
-
-namespace FixedIncomeManager
+﻿namespace FixedIncomeManager.Models
 {
     public enum FixedIncomeIndexer
         : short
     {
         // Certificado de Depósito Interbancário
         CDI,
+        CDI_PLUS, // (CDI+) same as above but it contains a fixed rate part
         // Índice nacional de Preços ao Consumidor Amplo (12 meses)
         IPCA
     }
@@ -37,8 +34,13 @@ namespace FixedIncomeManager
         CRI
     }
 
-    public class FixedIncomeData
+    public class FixedIncomeModel
     {
+        /// <summary>
+        /// Used for future values projections
+        /// </summary>
+        private readonly FixedIncomeCalculator _calculator;
+
         /// <summary>
         /// Name of the company
         /// </summary>
@@ -135,7 +137,7 @@ namespace FixedIncomeManager
             }
         }
 
-        public FixedIncomeData(
+        public FixedIncomeModel(
             string name,
             string broker,
             double capital,
@@ -157,35 +159,25 @@ namespace FixedIncomeManager
             Indexer = indexer;
             Hiring = hiring;
             Expiration = expiration;
+            _calculator = indexer == FixedIncomeIndexer.CDI
+                ? new ProportionalCalculator()
+                : new FixedRateCalculator();
         }
 
-        public double GetDailyPostTaxRemuneration(
-            BaseRateData rateData,
-            bool netTax = false)
+        public double GetDailyPostTaxRemuneration(double indexerValue)
         {
-            double taxation = netTax
-                ? 1f - Taxation
-                : 1f;
-            if (Indexer == FixedIncomeIndexer.CDI)
-            {
-                return 1 + Remuneration * taxation / 100 * rateData.GetRateDaily();
-            }
-            return 1 + rateData.GetRateDaily(Remuneration) * taxation;
+            return _calculator.GetDailyRate(Remuneration, indexerValue);
         }
 
-        public double GetDailyPreTaxRemuneration(
-            BaseRateData rateData,
-            bool netTax = false)
+        public double GetDailyPreTaxRemuneration()
         {
-            double taxation = netTax
-                ? 1f - Taxation
-                : 1f;
-            return 1 + taxation * rateData.GetRateDaily(Remuneration);
+            return _calculator.GetDailyRate(Remuneration, 1d);
         }
 
         public void UpdateBondsValueProjections(
-            BaseRateData rateData,
-            List<DateTime> holidays)
+            RateModel rateData,
+            List<DateTime> holidays,
+            bool setLastUpdateDate)
         {
             if (TaxType == FixedIncomeTaxType.PRE)
             {
@@ -197,18 +189,34 @@ namespace FixedIncomeManager
             {
                 PostFixedProjection(
                     rateData,
-                    holidays);
+                    holidays,
+                    setLastUpdateDate);
+            }
+            if (setLastUpdateDate)
+            {
+                /* The tax rate is updated in D+1, therefore we have to use the previous tax to update bond value
+                 * until previous day, and then use the new tax to do the current value projection.
+                 */
+                LastBondValueUpdate = DateTime.Today.AddDays(-1);
             }
         }
 
         public void PostFixedProjection(
-            BaseRateData rateData,
-            List<DateTime> holidays)
+            RateModel rateData,
+            List<DateTime> holidays,
+            bool setLastUpdateDate)
         {
+            if (rateData == null)
+            {
+                return;
+            }
+            DateTime today = setLastUpdateDate
+                ? DateTime.Today.AddDays(-1)
+                : DateTime.Today;
             CurrentBondValue = GetFutureValue(
                 LastBondValue,
                 LastBondValueUpdate,
-                DateTime.Now.Date,
+                today,
                 holidays,
                 rateData,
                 FixedIncomeTaxType.POST);
@@ -221,22 +229,25 @@ namespace FixedIncomeManager
                 FixedIncomeTaxType.POST);
             NetBondValueAtExpiration = GetFutureValue(
                 CurrentBondValue,
-                DateTime.Now.Date,
+                today,
                 Expiration,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.POST,
-                true);
+                FixedIncomeTaxType.POST);
         }
 
         public void PreFixedProjection(
-            BaseRateData rateData,
+            RateModel rateData,
             List<DateTime> holidays)
         {
+            if (rateData == null)
+            {
+                return;
+            }
             CurrentBondValue = GetFutureValue(
                 Capital,
                 Hiring,
-                DateTime.Now,
+                DateTime.Today,
                 holidays,
                 rateData,
                 FixedIncomeTaxType.PRE);
@@ -247,14 +258,14 @@ namespace FixedIncomeManager
                 holidays,
                 rateData,
                 FixedIncomeTaxType.PRE);
+            //TODO corrigir
             NetBondValueAtExpiration = GetFutureValue(
                 Capital,
                 Hiring,
                 Expiration,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.PRE,
-                true);
+                FixedIncomeTaxType.PRE);
         }
 
         public double GetFutureValue(
@@ -262,15 +273,14 @@ namespace FixedIncomeManager
             DateTime begin,
             DateTime end,
             List<DateTime> holidays,
-            BaseRateData rateData,
-            FixedIncomeTaxType taxType,
-            bool netRate = false)
+            RateModel rateData,
+            FixedIncomeTaxType taxType)
         {
             return initialValue *
                 Math.Pow(
                     taxType == FixedIncomeTaxType.POST
-                        ? GetDailyPostTaxRemuneration(rateData, netRate)
-                        : GetDailyPreTaxRemuneration(rateData, netRate),
+                        ? GetDailyPostTaxRemuneration(rateData.Rate)
+                        : GetDailyPreTaxRemuneration(),
                     GetWorkingDaysBetween(
                         begin,
                         end,

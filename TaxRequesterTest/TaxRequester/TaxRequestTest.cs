@@ -19,7 +19,7 @@ namespace TaxRequesterTest.TaxRequester
         [TestMethod]
         public void ParseCDIDataFromJson()
         {
-            BaseRateData cdiData = GetCDI(_cdiDataAsJson);
+            CDIData cdiData = GetCDI(_cdiDataAsJson);
             Assert.IsTrue(cdiData is CDIData);
         }
 
@@ -62,20 +62,20 @@ namespace TaxRequesterTest.TaxRequester
         public void GetIPCADataFromSerieArray()
         {
             string[] series = ParseIPCASerie(_ipcaDataAsJson);
-            BaseRateData ipcaData = GetIPCADataFromSerie(series);
+            IPCAData ipcaData = GetIPCADataFromSerie(series);
             Assert.IsTrue(ipcaData is IPCAData);
         }
 
         [TestMethod]
         public void GetCurrenteIPCARateFromJson()
         {
-            BaseRateData ipcaData = GetIPCALast12Months(_ipcaDataAsJson);
+            IPCAData ipcaData = GetIPCALast12Months(_ipcaDataAsJson);
             Assert.AreEqual(ipcaData.Rate, 10.06);
         }
         [TestMethod]
         public void GetCurrenteIPCADateFromJson()
         {
-            BaseRateData ipcaData = GetIPCALast12Months(_ipcaDataAsJson);
+            IPCAData ipcaData = GetIPCALast12Months(_ipcaDataAsJson);
             Assert.AreEqual(ipcaData.RateDate, new DateTime(2021, 12, 1));
         }
     }

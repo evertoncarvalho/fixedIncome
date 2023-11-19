@@ -32,10 +32,5 @@
                     + " data " + RateDate;
             }
         }
-        public override double GetRateDaily(double inputTax = 0)
-        {
-            inputTax += Rate;
-            return base.GetRateDaily(inputTax);
-        }
     }
 }

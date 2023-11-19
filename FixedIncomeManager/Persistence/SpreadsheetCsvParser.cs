@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using FixedIncomeManager.Models;
 using TaxRequester;
 
 namespace FixedIncomeManager.Persistence
 {
     public class SpreadsheetCsvParser
-        : IBondsPersistency<FixedIncomeData, CDIData>
+        : IBondsPersistency<FixedIncomeModel, CDIData>
     {
         private string _sourceString = null;
         public string SourceString
@@ -17,16 +15,16 @@ namespace FixedIncomeManager.Persistence
             }
         }
 
-        public SpreadsheetCsvParser(string sourceString)
+        public SpreadsheetCsvParser(string sourceString = "")
         {
             _sourceString = string.IsNullOrWhiteSpace(sourceString)
-                ? "fixedIncomeSample.csv"
+                ? "persistency/fixedIncomeSample.csv"
                 : sourceString;
         }
 
-        public ICollection<FixedIncomeData> GetBonds()
+        public ICollection<FixedIncomeModel> GetBonds()
         {
-            List<FixedIncomeData> items = new List<FixedIncomeData>(0);
+            List<FixedIncomeModel> items = new List<FixedIncomeModel>(0);
             try
             {
                 if (File.Exists(SourceString))
@@ -38,9 +36,13 @@ namespace FixedIncomeManager.Persistence
                         DateTime lastBondValueUpdate = DateTime.Parse(parts[1]);
                         while ((line = reader.ReadLine()) != null)
                         {
-                            items.Add(GetFixedIncomeDataFromCSV(
+                            var fixedIncome = GetFixedIncomeDataFromCSV(
                                 line,
-                                lastBondValueUpdate));
+                                lastBondValueUpdate);
+                            if(fixedIncome != null)
+                            {
+                                items.Add(fixedIncome);
+                            }
                         }
                     }
                 }
@@ -53,7 +55,7 @@ namespace FixedIncomeManager.Persistence
             return items;
         }
 
-        public bool SaveBonds(ICollection<FixedIncomeData> items)
+        public bool SaveBonds(ICollection<FixedIncomeModel> items)
         {
             return true;
         }
@@ -76,7 +78,7 @@ namespace FixedIncomeManager.Persistence
                 : FixedIncomeTaxType.PRE;
         }
 
-        protected FixedIncomeData GetFixedIncomeDataFromCSV(
+        protected FixedIncomeModel GetFixedIncomeDataFromCSV(
             string csv,
             DateTime? lastBondValueUpdate = null)
         {
@@ -88,7 +90,11 @@ namespace FixedIncomeManager.Persistence
                 throw new ArgumentException("invalid csv");
             }
             parts = csv.Split(';');
-            FixedIncomeData fixedIncome = new FixedIncomeData(
+            if (string.IsNullOrWhiteSpace(parts[2]))
+            {
+                return null;
+            }
+            FixedIncomeModel fixedIncome = new FixedIncomeModel(
                 parts[7],
                 parts[19],
                 double.Parse(parts[0], System.Globalization.NumberStyles.Currency),
