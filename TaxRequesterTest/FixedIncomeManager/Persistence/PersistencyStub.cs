@@ -4,18 +4,21 @@ using FixedIncomeManager.Persistence;
 namespace TaxRequesterTest.FixedIncomeManager.Persistence
 {
     internal class PersistencyStub
-        : IBondsPersistency<FixedIncomeModel, RateModel>
+        : IBondsPersistency<FixedIncomeModel, IndexerModel>
     {
         public string SourceString => throw new NotImplementedException();
-
+        public void Initialize()
+        {
+            //NOOP
+        }
         public ICollection<FixedIncomeModel> GetBonds()
         {
             return new HashSet<FixedIncomeModel>();
         }
 
-        public ICollection<RateModel> GetRates()
+        public ICollection<IndexerModel> GetRates()
         {
-            return new HashSet<RateModel>();
+            return new HashSet<IndexerModel>();
         }
 
         public bool SaveBonds(ICollection<FixedIncomeModel> items)
@@ -23,7 +26,7 @@ namespace TaxRequesterTest.FixedIncomeManager.Persistence
             return true;
         }
 
-        public bool SaveRates(ICollection<RateModel> rates)
+        public bool SaveRates(ICollection<IndexerModel> rates)
         {
             return true;
         }

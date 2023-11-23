@@ -111,5 +111,10 @@ namespace FixedIncomeManager.Persistence
             }
             return fixedIncome;
         }
+
+        public void Initialize()
+        {
+            //NOOP
+        }
     }
 }

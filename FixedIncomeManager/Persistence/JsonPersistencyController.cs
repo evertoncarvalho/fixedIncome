@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace FixedIncomeManager.Persistence
 {
     public class JsonPersistencyController
-        : IBondsPersistency<FixedIncomeModel, RateModel>
+        : IBondsPersistency<FixedIncomeModel, IndexerModel>
     {
         private string _sourceString = null;
         public string SourceString
@@ -38,14 +38,14 @@ namespace FixedIncomeManager.Persistence
             return Save(items, _sourceString);
         }
 
-        public bool SaveRates(ICollection<RateModel> rates)
+        public bool SaveRates(ICollection<IndexerModel> rates)
         {
             return Save(rates, RateSourceString);
         }
 
-        public ICollection<RateModel> GetRates()
+        public ICollection<IndexerModel> GetRates()
         {
-            return ReadDatabase<RateModel>(RateSourceString);
+            return ReadDatabase<IndexerModel>(RateSourceString);
         }
 
         private bool Save<T>(ICollection<T> content,
@@ -84,6 +84,11 @@ namespace FixedIncomeManager.Persistence
                 }
             }
             return items;
+        }
+
+        public void Initialize()
+        {
+            //NOOP
         }
     }
 }

@@ -48,8 +48,8 @@ namespace TaxRequesterTest.FixedIncomeManager
         public void JsonPersistencyControllerSaveRate()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
-            List<RateModel> items = new List<RateModel>();
-            items.Add(GetRateDataSample(RateType.CDI, 9, DateTime.Now.Date));
+            List<IndexerModel> items = new List<IndexerModel>();
+            items.Add(GetRateDataSample(IndexerType.CDI, 9, DateTime.Now.Date));
             Assert.IsTrue(persistency.SaveRates(items));
         }
 
@@ -57,9 +57,9 @@ namespace TaxRequesterTest.FixedIncomeManager
         public void JsonPersistencyControllerGetRates()
         {
             JsonPersistencyController persistency = GetAndSetupJsonPersistencyController();
-            List<RateModel> items = new List<RateModel>();
-            items.Add(GetRateDataSample(RateType.CDI, 9, DateTime.Now.Date));
-            items.Add(GetRateDataSample(RateType.IPCA12, 9, DateTime.Now.Date));
+            List<IndexerModel> items = new List<IndexerModel>();
+            items.Add(GetRateDataSample(IndexerType.CDI, 9, DateTime.Now.Date));
+            items.Add(GetRateDataSample(IndexerType.IPCA12, 9, DateTime.Now.Date));
             Assert.IsTrue(persistency.SaveRates(items));
             Assert.AreEqual(persistency.GetRates().Count, 2);
         }
@@ -149,18 +149,18 @@ namespace TaxRequesterTest.FixedIncomeManager
                 DateTime.Now);
         }
 
-        private RateModel GetRateDataSample(
-            RateType type,
+        private IndexerModel GetRateDataSample(
+            IndexerType type,
             double rate,
             DateTime date)
         {
-            return new RateModelTest(type, rate, date);
+            return new IndexerModelTest(type, rate, date);
         }
 
-        class RateModelTest
-            : RateModel
+        class IndexerModelTest
+            : IndexerModel
         {
-            public RateModelTest(RateType type, double rate, DateTime date)
+            public IndexerModelTest(IndexerType type, double rate, DateTime date)
                 : base(type)
             {
                 UpdateRate(rate, date);

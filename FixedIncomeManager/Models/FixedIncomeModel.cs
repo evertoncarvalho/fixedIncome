@@ -175,7 +175,7 @@
         }
 
         public void UpdateBondsValueProjections(
-            RateModel rateData,
+            IndexerModel rateData,
             List<DateTime> holidays,
             bool setLastUpdateDate)
         {
@@ -202,7 +202,7 @@
         }
 
         public void PostFixedProjection(
-            RateModel rateData,
+            IndexerModel rateData,
             List<DateTime> holidays,
             bool setLastUpdateDate)
         {
@@ -237,7 +237,7 @@
         }
 
         public void PreFixedProjection(
-            RateModel rateData,
+            IndexerModel rateData,
             List<DateTime> holidays)
         {
             if (rateData == null)
@@ -273,13 +273,13 @@
             DateTime begin,
             DateTime end,
             List<DateTime> holidays,
-            RateModel rateData,
+            IndexerModel rateData,
             FixedIncomeTaxType taxType)
         {
             return initialValue *
                 Math.Pow(
                     taxType == FixedIncomeTaxType.POST
-                        ? GetDailyPostTaxRemuneration(rateData.Rate)
+                        ? GetDailyPostTaxRemuneration(rateData.Value)
                         : GetDailyPreTaxRemuneration(),
                     GetWorkingDaysBetween(
                         begin,
