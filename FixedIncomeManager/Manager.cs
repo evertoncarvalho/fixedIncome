@@ -8,10 +8,22 @@ namespace FixedIncomeManager
 {
     public class Manager
     {
-        private List<FixedIncomeModel> _fixedIncome = new List<FixedIncomeModel>();
+        private HashSet<DateTime> _holidays;
+        private List<FixedIncomeModel> _fixedIncome = new();
         private readonly IBondsPersistency<FixedIncomeModel, IndexerModel> _persistency;
         public IndexerModel CDIRate { get; private set; } = new IndexerModel(IndexerType.CDI);
         public IndexerModel IPCA12Rate { get; private set; } = new IndexerModel(IndexerType.IPCA12);
+        private HashSet<DateTime> Holidays
+        {
+            get
+            {
+                if(_holidays == null)
+                {
+                    _holidays = new (GetHolidays());
+                }
+                return _holidays;
+            }
+        }
         public Manager(IBondsPersistency<FixedIncomeModel, IndexerModel> persistency)
         {
             _persistency = persistency;
@@ -155,6 +167,63 @@ namespace FixedIncomeManager
                 Console.WriteLine(ex.Message);
             }
             return holidays;
+        }
+        public ICollection<DateTime> GetAportDates(int aportYear, int maturityYear)
+        {
+            int netDays = (maturityYear - aportYear) * -365;
+            List<DateTime> aportDates = new List<DateTime>();
+            foreach(var matutiry in GetMaturities(maturityYear))
+            {
+                aportDates.Add(
+                    GetNearWorkingDay(
+                        Holidays,
+                        matutiry.AddDays(netDays),
+                        x => -1)); // always moves the days backwards
+            }
+            return aportDates;
+        }
+        public ICollection<DateTime> GetMaturities(int year)
+        {
+            DateTime maturity = new DateTime(year, 1, 1);
+            List<DateTime> maturities = new (1);
+            int auxMultiplier = 1;
+            while (maturity.Year == year)
+            {
+                maturities.Add(
+                    GetNearWorkingDay(
+                        Holidays,
+                        maturity,
+                        x => x == 1 ? 1 : -1)); // if it is at the beginning of the month, the days move forward,
+                                                // otherwise, they move backwards
+
+                if (maturity.Day == 1)
+                {
+                    auxMultiplier = 1;
+                }
+                else
+                {
+                    auxMultiplier = -1;
+                    maturity = maturity.AddMonths(1);
+                }
+                maturity = maturity.AddDays(14 * auxMultiplier);
+            }
+                        
+            return maturities;
+        }
+        private DateTime GetNearWorkingDay(HashSet<DateTime> holidays, DateTime date, Func<int, int> incrementRule)
+        {
+            int increment = incrementRule(date.Day);
+            while(!IsWorkingDay(holidays, date))
+            {
+                date = date.AddDays(increment);
+            }
+            return date;
+        }
+        private bool IsWorkingDay(HashSet<DateTime> holidays, DateTime date)
+        {
+            return !holidays.Contains(date)
+                && date.DayOfWeek != DayOfWeek.Saturday
+                && date.DayOfWeek != DayOfWeek.Sunday;
         }
     }
 }

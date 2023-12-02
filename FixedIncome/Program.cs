@@ -12,8 +12,18 @@ namespace FixedIncome
             persistency.SaveBonds(
                 new FixedIncomeManager.Persistence.SpreadsheetCsvParser().GetBonds());
             Manager manager = new Manager(persistency);
-            Print(manager);
-            manager.Save();
+            int count = 0;
+            var maturities = manager.GetMaturities(2027).ToArray();
+            var aports = manager.GetAportDates(2024, 2027).ToArray();
+            for(int i = 0; i < maturities.Length; ++i)
+            {
+                Console.WriteLine($"{aports[i]} -> { maturities[i] }");
+                ++count;
+                if (count % 2 == 0)
+                    Console.WriteLine();
+            }
+            //Print(manager);
+            //manager.Save();
             Console.ReadKey();
         }
 
@@ -46,7 +56,7 @@ namespace FixedIncome
                 builder.Append(unnavailable);
             }
             builder.Append("ipca ");
-            if(manager.IPCA12Rate != null)
+            if (manager.IPCA12Rate != null)
             {
                 builder.Append($"em {manager.IPCA12Rate.Value.ToString("dd/MM/yy")}: {manager.IPCA12Rate.UpdatedAt}\n");
             }
