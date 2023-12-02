@@ -1,0 +1,2 @@
+-	elaborate a way to update only one bond
+-	create a way to populate sqlite database with json/csv data
