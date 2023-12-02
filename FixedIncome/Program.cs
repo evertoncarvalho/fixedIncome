@@ -14,7 +14,7 @@ namespace FixedIncome
             Manager manager = new Manager(persistency);
             int count = 0;
             var maturities = manager.GetMaturities(2027).ToArray();
-            var aports = manager.GetAportDates(2024, 2027).ToArray();
+            var aports = manager.GetInputDates(2024, 2027).ToArray();
             for(int i = 0; i < maturities.Length; ++i)
             {
                 Console.WriteLine($"{aports[i]} -> { maturities[i] }");

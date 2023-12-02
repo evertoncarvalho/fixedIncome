@@ -168,19 +168,19 @@ namespace FixedIncomeManager
             }
             return holidays;
         }
-        public ICollection<DateTime> GetAportDates(int aportYear, int maturityYear)
+        public ICollection<DateTime> GetInputDates(int inputYear, int maturityYear)
         {
-            int netDays = (maturityYear - aportYear) * -365;
-            List<DateTime> aportDates = new List<DateTime>();
+            int netDays = (maturityYear - inputYear) * -365;
+            List<DateTime> inputDates = new List<DateTime>();
             foreach(var matutiry in GetMaturities(maturityYear))
             {
-                aportDates.Add(
+                inputDates.Add(
                     GetNearWorkingDay(
                         Holidays,
                         matutiry.AddDays(netDays),
                         x => -1)); // always moves the days backwards
             }
-            return aportDates;
+            return inputDates;
         }
         public ICollection<DateTime> GetMaturities(int year)
         {
