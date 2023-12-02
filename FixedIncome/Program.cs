@@ -39,7 +39,8 @@ namespace FixedIncome
             string unnavailable = "indisponível\n";
             if (manager.CDIRate != null)
             {
-                builder.Append($"em {manager.CDIRate.Value.ToString("dd/MM/yy")}: {manager.CDIRate.UpdatedAt}\n");
+                builder.Append($"em {manager.CDIRate.Value}:" +
+                    $" {manager.CDIRate.UpdatedAt.ToString("dd/MM/yy")}\n");
             }
             else
             {
@@ -48,7 +49,8 @@ namespace FixedIncome
             builder.Append("ipca ");
             if(manager.IPCA12Rate != null)
             {
-                builder.Append($"em {manager.IPCA12Rate.Value.ToString("dd/MM/yy")}: {manager.IPCA12Rate.UpdatedAt}\n");
+                builder.Append($"em {manager.IPCA12Rate.Value.ToString()}:" +
+                    $" {manager.IPCA12Rate.UpdatedAt.ToString("dd/MM/yy")}\n");
             }
             else
             {
