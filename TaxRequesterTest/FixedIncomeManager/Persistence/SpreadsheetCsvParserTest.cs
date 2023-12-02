@@ -27,13 +27,13 @@ namespace TaxRequesterTest.FixedIncomeManager.Persistence
         [TestMethod]
         public void GetFixedIncomeTaxTypeTest()
         {
-            Assert.AreEqual(GetFixedIncomeTaxType("Pós"), FixedIncomeTaxType.POST);
-            Assert.AreEqual(GetFixedIncomeTaxType("Pré"), FixedIncomeTaxType.PRE);
+            Assert.AreEqual(GetFixedIncomeTaxType("Pós"), FixedIncomeRemunerationType.POST);
+            Assert.AreEqual(GetFixedIncomeTaxType("Pré"), FixedIncomeRemunerationType.PRE);
         }
         [TestMethod]
         public void GetFixedIncomeTaxTypeWithInvalidCharacter()
         {
-            Assert.AreEqual(GetFixedIncomeTaxType("P�s"), FixedIncomeTaxType.POST);
+            Assert.AreEqual(GetFixedIncomeTaxType("P�s"), FixedIncomeRemunerationType.POST);
         }
     }
 }

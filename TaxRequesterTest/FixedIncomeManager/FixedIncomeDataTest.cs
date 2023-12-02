@@ -14,7 +14,7 @@ namespace TaxRequesterTest.FixedIncomeManager
                   0f,
                   0f,
                   FixedIncomeType.CDB,
-                  FixedIncomeTaxType.POST,
+                  FixedIncomeRemunerationType.POST,
                   FixedIncomeIndexer.CDI,
                   DateTime.Now,
                   DateTime.Now)

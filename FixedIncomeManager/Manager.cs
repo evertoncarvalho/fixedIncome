@@ -26,7 +26,7 @@ namespace FixedIncomeManager
             double remuneration,
             double lastBondValue,
             FixedIncomeType type,
-            FixedIncomeTaxType taxType,
+            FixedIncomeRemunerationType taxType,
             FixedIncomeIndexer indexer,
             DateTime hiring,
             DateTime expiration)

@@ -40,7 +40,7 @@ namespace FixedIncomeManager.Persistence
                             reader.GetDouble(1),
                             reader.GetDouble(2),
                             (FixedIncomeType)reader.GetInt32(8),
-                            (FixedIncomeTaxType)reader.GetInt32(9),
+                            (FixedIncomeRemunerationType)reader.GetInt32(9),
                             (FixedIncomeIndexer)reader.GetInt32(7),
                             reader.GetDateTime(3),
                             reader.GetDateTime(4)));
@@ -62,20 +62,13 @@ namespace FixedIncomeManager.Persistence
                     while (reader.Read())
                     {
                         rates.Add(new IndexerModel(
-                            reader.GetString(5),
-                            reader.GetString(6),
+                            (IndexerType)reader.GetInt32(2),
                             reader.GetDouble(0),
-                            reader.GetDouble(1),
-                            reader.GetDouble(2),
-                            (FixedIncomeType)reader.GetInt32(8),
-                            (FixedIncomeTaxType)reader.GetInt32(9),
-                            (FixedIncomeIndexer)reader.GetInt32(7),
-                            reader.GetDateTime(3),
-                            reader.GetDateTime(4)));
+                            reader.GetDateTime(1)));
                     }
                 }
             }
-            return rates
+            return rates;
         }
         public bool SaveBonds(ICollection<FixedIncomeModel> items)
         {

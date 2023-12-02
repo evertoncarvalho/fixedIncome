@@ -10,7 +10,7 @@
         IPCA
     }
 
-    public enum FixedIncomeTaxType
+    public enum FixedIncomeRemunerationType
         : short
     {
         PRE,
@@ -64,7 +64,7 @@
         /// <summary>
         /// Indicates when the remuneration can float.
         /// </summary>
-        public FixedIncomeTaxType TaxType { get; private set; }
+        public FixedIncomeRemunerationType TaxType { get; private set; }
         /// <summary>
         /// Rate used for bonds remuneration
         /// </summary>
@@ -144,7 +144,7 @@
             double lastBondValue,
             double remuneration,
             FixedIncomeType type,
-            FixedIncomeTaxType taxType,
+            FixedIncomeRemunerationType taxType,
             FixedIncomeIndexer indexer,
             DateTime hiring,
             DateTime expiration)
@@ -179,7 +179,7 @@
             List<DateTime> holidays,
             bool setLastUpdateDate)
         {
-            if (TaxType == FixedIncomeTaxType.PRE)
+            if (TaxType == FixedIncomeRemunerationType.PRE)
             {
                 PreFixedProjection(
                     rateData,
@@ -219,21 +219,21 @@
                 today,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.POST);
+                FixedIncomeRemunerationType.POST);
             BondValueAtExpiration = GetFutureValue(
                 LastBondValue,
                 LastBondValueUpdate,
                 Expiration,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.POST);
+                FixedIncomeRemunerationType.POST);
             NetBondValueAtExpiration = GetFutureValue(
                 CurrentBondValue,
                 today,
                 Expiration,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.POST);
+                FixedIncomeRemunerationType.POST);
         }
 
         public void PreFixedProjection(
@@ -250,14 +250,14 @@
                 DateTime.Today,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.PRE);
+                FixedIncomeRemunerationType.PRE);
             BondValueAtExpiration = GetFutureValue(
                 Capital,
                 Hiring,
                 Expiration,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.PRE);
+                FixedIncomeRemunerationType.PRE);
             //TODO corrigir
             NetBondValueAtExpiration = GetFutureValue(
                 Capital,
@@ -265,7 +265,7 @@
                 Expiration,
                 holidays,
                 rateData,
-                FixedIncomeTaxType.PRE);
+                FixedIncomeRemunerationType.PRE);
         }
 
         public double GetFutureValue(
@@ -274,11 +274,11 @@
             DateTime end,
             List<DateTime> holidays,
             IndexerModel rateData,
-            FixedIncomeTaxType taxType)
+            FixedIncomeRemunerationType taxType)
         {
             return initialValue *
                 Math.Pow(
-                    taxType == FixedIncomeTaxType.POST
+                    taxType == FixedIncomeRemunerationType.POST
                         ? GetDailyPostTaxRemuneration(rateData.Value)
                         : GetDailyPreTaxRemuneration(),
                     GetWorkingDaysBetween(

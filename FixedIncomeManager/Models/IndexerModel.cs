@@ -15,6 +15,11 @@ namespace FixedIncomeManager.Models
         {
             Type = type;
         }
+        internal IndexerModel(IndexerType type, double value, DateTime updatedAt)
+            : this(type)
+        {
+            UpdateRate(value, updatedAt);
+        }
         internal protected void UpdateRate(double value, DateTime updatedAt)
         {
             Value = value;

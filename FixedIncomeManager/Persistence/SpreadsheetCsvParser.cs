@@ -70,12 +70,12 @@ namespace FixedIncomeManager.Persistence
             return null;
         }
 
-        protected FixedIncomeTaxType GetFixedIncomeTaxType(string taxType)
+        protected FixedIncomeRemunerationType GetFixedIncomeTaxType(string taxType)
         {
             return taxType.Equals("Pós")
                 || taxType.Equals("P�s")
-                ? FixedIncomeTaxType.POST
-                : FixedIncomeTaxType.PRE;
+                ? FixedIncomeRemunerationType.POST
+                : FixedIncomeRemunerationType.PRE;
         }
 
         protected FixedIncomeModel GetFixedIncomeDataFromCSV(
