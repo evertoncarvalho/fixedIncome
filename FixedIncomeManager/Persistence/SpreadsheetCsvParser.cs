@@ -116,5 +116,15 @@ namespace FixedIncomeManager.Persistence
         {
             //NOOP
         }
+
+        public bool Save(FixedIncomeModel item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SaveRate(CDIData rate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

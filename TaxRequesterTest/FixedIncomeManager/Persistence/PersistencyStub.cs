@@ -30,5 +30,15 @@ namespace TaxRequesterTest.FixedIncomeManager.Persistence
         {
             return true;
         }
+
+        public bool Save(FixedIncomeModel item)
+        {
+            return true;
+        }
+
+        public bool SaveRate(IndexerModel rate)
+        {
+            return true;
+        }
     }
 }

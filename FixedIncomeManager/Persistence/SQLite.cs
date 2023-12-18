@@ -115,5 +115,15 @@ namespace FixedIncomeManager.Persistence
                         Description TEXT
                     )";
         }
+
+        public bool Save(FixedIncomeModel item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SaveRate(IndexerModel rate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

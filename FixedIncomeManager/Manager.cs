@@ -8,7 +8,7 @@ namespace FixedIncomeManager
 {
     public class Manager
     {
-        private List<FixedIncomeModel> _fixedIncome = new List<FixedIncomeModel>();
+        private List<FixedIncomeModel> _fixedIncome = new();
         private readonly IBondsPersistency<FixedIncomeModel, IndexerModel> _persistency;
         public IndexerModel CDIRate { get; private set; } = new IndexerModel(IndexerType.CDI);
         public IndexerModel IPCA12Rate { get; private set; } = new IndexerModel(IndexerType.IPCA12);
@@ -18,7 +18,6 @@ namespace FixedIncomeManager
             _fixedIncome.AddRange(_persistency.GetBonds());
             Initialize();
         }
-
         public bool Add(
             string name,
             string broker,
@@ -43,18 +42,15 @@ namespace FixedIncomeManager
                             hiring,
                             expiration));
         }
-
         private bool Add(FixedIncomeModel fixedIncomeData)
         {
             _fixedIncome.Add(fixedIncomeData);
             return true;
         }
-
         public List<FixedIncomeModel> Get()
         {
             return _fixedIncome;
         }
-
         public FixedIncomeSummaryData GetSummary()
         {
             FixedIncomeSummaryData data = new FixedIncomeSummaryData();
@@ -66,18 +62,16 @@ namespace FixedIncomeManager
             }
             return data;
         }
-
         public void Save()
         {
             _persistency.SaveBonds(_fixedIncome);
         }
-
         protected void Initialize()
         {
             Holidays holidays = GetHolidays();
-            GetCurrentRates();
+            RequestAndUpdateRates();
             IndexerModel? previousCDI, previousIPCA12;
-            if(IsRateChanged(out previousCDI, out previousIPCA12))
+            if (IsRateChanged(out previousCDI, out previousIPCA12))
             {
                 UpdateBondsProjections(
                     previousCDI,
@@ -93,16 +87,16 @@ namespace FixedIncomeManager
         /// <summary>
         /// Request and set the current CDI and IPCA12 rates.
         /// </summary>
-        private void GetCurrentRates()
+        private void RequestAndUpdateRates()
         {
             Requester requester = new Requester();
             var cdi = requester.GetCDI();
-            if(cdi != null )
+            if (cdi != null)
             {
                 CDIRate.UpdateRate(cdi.Rate, cdi.RateDate);
             }
             var ipca = requester.GetIPCALast12Months();
-            if(ipca != null )
+            if (ipca != null)
             {
                 IPCA12Rate.UpdateRate(ipca.Rate, ipca.RateDate);
             }
@@ -112,19 +106,20 @@ namespace FixedIncomeManager
             previousCDI = null;
             previousIPCA = null;
             var rateList = _persistency.GetRates();
-            if(rateList.Count == 0)
+            if (rateList.Count == 0)
             {
                 return false;
             }
-            previousCDI = _persistency.GetRates().Last(rate => rate.Type == IndexerType.CDI);
-            previousIPCA = _persistency.GetRates().Last(rate => rate.Type == IndexerType.IPCA12);
+            var rates = _persistency.GetRates().OrderBy(rate => rate.UpdatedAt);
+            previousCDI = rates.Last(rate => rate.Type == IndexerType.CDI);
+            previousIPCA = rates.Last(rate => rate.Type == IndexerType.IPCA12);
             return !(previousCDI.Equals(CDIRate)
                 && previousIPCA.Equals(IPCA12Rate));
         }
         private void UpdateBondsProjections(
             IndexerModel cdi, IndexerModel ipca12, Holidays holidays, bool setLastUpdateDate = false)
         {
-            foreach(FixedIncomeModel item in _fixedIncome)
+            foreach (FixedIncomeModel item in _fixedIncome)
             {
                 item.UpdateBondsValueProjections(
                     item.Indexer == FixedIncomeIndexer.IPCA
