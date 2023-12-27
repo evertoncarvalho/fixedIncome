@@ -11,8 +11,13 @@ namespace FlatbufferOnServer
         protected Dictionary<MessageType, MessageHandler> Callbacks = new();
         public MainServer()
         {
+            FillCallbacks();
         }
-        public abstract void FillCallbacks();
+        protected abstract void FillCallbacks();
+        protected abstract Message GetMessageFromBytes(byte[] messageBytes);
+        protected abstract bool IsValidMessage(Message message);
+        protected abstract byte[] GetMessageBytes(MessageType type, object message);
+        protected abstract void ProcessMessage(ProtocolControl clientSocket, Message message);
         public virtual async void Start(int listenPort, int maxSimuntaneousRequestsBeforeBusy = 10)
         {
             IPAddress ipAddress = IPAddress.Any;
@@ -36,10 +41,6 @@ namespace FlatbufferOnServer
                 OnNewClientConnection(socket);
             }
         }
-        protected abstract Message GetMessageFromBytes(byte[] messageBytes);
-        protected abstract bool IsValidMessage(Message message);
-        protected abstract byte[] GetMessageBytes(MessageType type, Message message);
-        protected abstract void ProcessMessage(ProtocolControl clientSocket, Message message);
         protected virtual async void OnNewClientConnection(ProtocolControl socket)
         {
             byte[] bytes = new byte[8];
@@ -73,7 +74,7 @@ namespace FlatbufferOnServer
                 }
             }
         }
-        protected virtual byte[] PackMessage(MessageType type, Message message)
+        protected virtual byte[] PackMessage(MessageType type, object message)
         {
             return ProtocolControl.AssemblyMessage(
                 GetMessageBytes(type, message));

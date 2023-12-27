@@ -1,0 +1,78 @@
+namespace FixedIncomeProtocol;
+
+enum IndexerType : byte
+{
+	CDI = 0,
+	CDI_PLUS = 1,
+	IPCA12 = 2
+}
+
+enum TaxType : byte
+{
+	PRE = 0,
+	POST = 1
+}
+
+enum FixedIncomeType : byte
+{
+	LC = 0,
+	LCA = 1,
+	LCI = 2,
+	CDB = 3,
+	CRA = 4,
+	CRI = 5
+}
+
+union FixedIncomeMessageType
+{
+	FixedIncome,
+	Indexer,
+	RequestFixedIncomes,
+	RequestIndexers,
+	ResponseFixedIncomes,
+	ResponseIndexers
+}
+
+table FixedIncome
+{
+	name: string(required);
+	capital: double;
+	begin_date: uint64;
+	remuneration: float;
+	indexer: IndexerType;
+	tax_type: TaxType;
+	fixed_income_type: FixedIncomeType;
+	maturity_date: uint64;
+}
+
+table Indexer
+{
+	current_value: double;
+	indexer_type: IndexerType;
+	updated_at: uint64;
+}
+
+table RequestFixedIncomes
+{
+}
+
+table RequestIndexers
+{
+}
+
+table ResponseFixedIncomes
+{
+	itens: [FixedIncome];
+}
+
+table ResponseIndexers
+{
+	itens: [Indexer];
+}
+
+table FixedIncomeMessage
+{
+	message : FixedIncomeMessageType (required);
+}
+
+root_type FixedIncomeMessage;

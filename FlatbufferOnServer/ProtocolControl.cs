@@ -48,6 +48,19 @@ namespace FlatbufferOnServer
             _idleSince = DateTime.Now;
             return data;
         }
+        public virtual void Send(byte[] packMessage)
+        {
+            try
+            {
+                Handler.Send(packMessage);
+                _idleSince = DateTime.Now;
+            }
+            catch (SocketException)
+            {
+                //Logger.Error($"fail to send package to {ClientData}. Disconnecting.");
+                Disconnect();
+            }
+        }
         internal void Disconnect()
         {
             try
