@@ -14,7 +14,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FixedIncomeManager\FixedIncomeManager.csproj" />
+    <ProjectReference Include="..\FlatbufferOnServer\FlatbufferOnServer.csproj" />
+    <ProjectReference Include="..\GUIProtocol\GUIProtocol.csproj" />
     <ProjectReference Include="..\TaxRequester\TaxRequester.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FlatBuffers">
+      <HintPath>..\lib\FlatBuffers.dll</HintPath>
+    </Reference>
   </ItemGroup>
 	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

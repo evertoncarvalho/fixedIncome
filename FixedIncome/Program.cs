@@ -7,6 +7,11 @@ namespace FixedIncome
     {
         static void Main(string[] args)
         {
+            ConsoleApp();        
+            Console.ReadKey();
+        }
+        static void ConsoleApp()
+        {
             CreatePersistencyDirectory();
             var persistency = new FixedIncomeManager.Persistence.JsonPersistencyController();
             persistency.SaveBonds(
@@ -14,9 +19,10 @@ namespace FixedIncome
             Manager manager = new Manager(persistency);
             Print(manager);
             manager.Save();
+            GUIServer.GUIServer server = new(manager);
+            server.Start(9000);
             Console.ReadKey();
         }
-
         static void CreatePersistencyDirectory()
         {
             string directory = "persistency";
