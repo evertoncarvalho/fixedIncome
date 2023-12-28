@@ -3,13 +3,13 @@ using System.Net.Sockets;
 
 namespace FlatbufferOnServer
 {
-    public abstract class MainServer <MessageType, Message>
+    public abstract class ServerConnectionManager <MessageType, Message>
     {
         protected delegate void MessageHandler(ProtocolControl clientSocket, Message message);
 
         protected List<ProtocolControl> Clients = new();
         protected Dictionary<MessageType, MessageHandler> Callbacks = new();
-        public MainServer()
+        public ServerConnectionManager()
         {
             FillCallbacks();
         }
@@ -18,10 +18,11 @@ namespace FlatbufferOnServer
         protected abstract bool IsValidMessage(Message message);
         protected abstract byte[] GetMessageBytes(MessageType type, object message);
         protected abstract void ProcessMessage(ProtocolControl clientSocket, Message message);
-        public virtual async void Start(int listenPort, int maxSimuntaneousRequestsBeforeBusy = 10)
+        public virtual async void Start(int port, string host = "",
+            int maxSimuntaneousRequestsBeforeBusy = 10)
         {
             IPAddress ipAddress = IPAddress.Any;
-            IPEndPoint endPoint = new IPEndPoint(ipAddress, listenPort);
+            IPEndPoint endPoint = new IPEndPoint(ipAddress, port);
             Socket listener = new Socket(
                 ipAddress.AddressFamily,
                 SocketType.Stream,
@@ -29,16 +30,16 @@ namespace FlatbufferOnServer
 
             listener.Bind(endPoint);
             listener.Listen(maxSimuntaneousRequestsBeforeBusy);
-            ProtocolControl socket;
+            ProtocolControl protocolControl;
             while (true)
             {
                 Socket newClient = await listener.AcceptAsync();
                 lock (Clients)
                 {
-                    socket = (ProtocolControl)Activator.CreateInstance(typeof(ProtocolControl), new object[] { newClient });
-                    Clients.Add(socket);
+                    protocolControl = new (newClient);
+                    Clients.Add(protocolControl);
                 }
-                OnNewClientConnection(socket);
+                OnNewClientConnection(protocolControl);
             }
         }
         protected virtual async void OnNewClientConnection(ProtocolControl socket)

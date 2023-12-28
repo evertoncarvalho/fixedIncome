@@ -7,10 +7,16 @@ namespace FlatbufferOnServer
     {
         private DateTime _idleSince = DateTime.Now;
         private System.Timers.Timer _heartbeat = new System.Timers.Timer();
-        internal Socket Handler { get; set; }
+        private readonly Socket _socket;
+
         internal event Dispose OnDispose;
-        internal ProtocolControl(int heartbeatInSeconds = 30)
+
+        public bool Connected => _socket != null && _socket.Connected;
+        internal ProtocolControl(
+            Socket socket,
+            double heartbeatInSeconds = 30)
         {
+            _socket = socket;
             SetupHeartbeat(heartbeatInSeconds * 1000);
         }
         /// <summary>
@@ -30,7 +36,7 @@ namespace FlatbufferOnServer
         }
         internal virtual byte[] Receive(ref byte[] data)
         {
-            Handler.Receive(
+            _socket.Receive(
                 data,
                 0,
                 sizeof(int),
@@ -40,7 +46,7 @@ namespace FlatbufferOnServer
             {
                 data = new byte[size];
             }
-            Handler.Receive(
+            _socket.Receive(
                data,
                0,
                size,
@@ -52,7 +58,7 @@ namespace FlatbufferOnServer
         {
             try
             {
-                Handler.Send(packMessage);
+                _socket.Send(packMessage);
                 _idleSince = DateTime.Now;
             }
             catch (SocketException)
@@ -67,8 +73,8 @@ namespace FlatbufferOnServer
             {
                 _heartbeat.Stop();
                 _heartbeat.Dispose();
-                Handler.Close();
-                Handler.Dispose();
+                _socket.Close();
+                _socket.Dispose();
             }
             catch (Exception ex)
             {
