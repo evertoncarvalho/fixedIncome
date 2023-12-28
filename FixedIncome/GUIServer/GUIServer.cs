@@ -6,7 +6,7 @@ using FlatBuffers;
 
 namespace FixedIncome.GUIServer
 {
-    internal class GUIServer : MainServer<FixedIncomeMessageType, FixedIncomeMessage>
+    internal class GUIServer : ServerConnectionManager<FixedIncomeMessageType, FixedIncomeMessage>
     {
         private readonly Manager _manager;
         internal GUIServer(Manager manager)
